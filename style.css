@@ -3,18 +3,24 @@
 
 body {
   background-image: 
-    radial-gradient(circle at 50% 50%, rgba(197, 160, 89, 0.05) 0%, transparent 70%),
+    radial-gradient(circle at 50% 50%, rgba(197, 160, 89, 0.03) 0%, transparent 70%),
     url("https://www.transparenttextures.com/patterns/natural-paper.png");
 }
 
 /* 성명학 카드 */
 .premium-oriental-card {
   background: white;
-  border-radius: 3rem;
+  border-radius: 2.5rem;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.08);
-  border: 1px solid rgba(197, 160, 89, 0.1);
+  box-shadow: 0 20px 60px -15px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(197, 160, 89, 0.08);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.premium-oriental-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 30px 80px -20px rgba(74, 28, 34, 0.08);
 }
 
 .premium-oriental-card::before {
@@ -23,7 +29,7 @@ body {
   left: 0;
   top: 0;
   bottom: 0;
-  width: 16px;
+  width: 12px;
   background: linear-gradient(to bottom, #4a1c22, #8b2e2e);
 }
 
@@ -32,14 +38,14 @@ body {
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -80%);
-  font-size: 8rem;
+  transform: translate(-50%, -85%);
+  font-size: 9rem;
   font-weight: 900;
-  color: #fbfbfb;
+  color: #f8f8f8;
   pointer-events: none;
   letter-spacing: -0.05em;
   z-index: 0;
-  opacity: 0.6;
+  opacity: 0.7;
 }
 
 .input-premium {
@@ -55,19 +61,14 @@ body {
   padding-bottom: 0.5rem;
   position: relative;
   z-index: 10;
-  transition: transform 0.3s ease;
-}
-
-.input-premium:focus {
-  transform: scale(1.05);
 }
 
 .input-border {
-  width: 2.5rem;
+  width: 2rem;
   height: 2px;
   background-color: #e5e7eb;
   margin: 0 auto;
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition: all 0.4s ease;
 }
 
 .input-premium:focus + .input-border {
@@ -79,10 +80,9 @@ body {
   font-size: 10px;
   color: #c5a059;
   font-weight: 900;
-  letter-spacing: 0.3em;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  margin-top: 1.5rem;
-  display: block;
+  margin-top: 1rem;
   text-align: center;
 }
 
@@ -90,13 +90,12 @@ body {
 .btn-destiny {
   background: #4a1c22;
   width: 100%;
-  padding: 1.8rem 0;
-  border-radius: 2rem;
+  padding: 1.5rem 0;
+  border-radius: 1.5rem;
   color: white;
   font-weight: 900;
-  font-size: 1.4rem;
-  letter-spacing: -0.02em;
-  box-shadow: 0 25px 50px -12px rgba(74, 28, 34, 0.4);
+  font-size: 1.2rem;
+  box-shadow: 0 20px 40px -10px rgba(74, 28, 34, 0.3);
   transition: all 0.3s ease;
   border: none;
   cursor: pointer;
@@ -108,8 +107,8 @@ body {
   content: '';
   position: absolute;
   top: 0; left: -100%; width: 100%; height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-  transition: 0.5s;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+  transition: 0.6s;
 }
 
 .btn-destiny:hover::after {
@@ -117,7 +116,7 @@ body {
 }
 
 .btn-destiny:active {
-  transform: scale(0.96);
+  transform: scale(0.97);
 }
 
 /* 애니메이션 */
@@ -126,13 +125,23 @@ body {
 }
 
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(40px); }
+  from { opacity: 0; transform: translateY(30px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-.oriental-card {
-  background: white;
-  border-radius: 2rem;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.03);
-  border: 1px solid rgba(0,0,0,0.05);
+/* 하단 내비게이션 바 (앱 느낌) */
+.mobile-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  height: 4.5rem;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  border-top: 1px solid rgba(0,0,0,0.05);
+  z-index: 50;
+  padding-bottom: env(safe-area-inset-bottom);
 }
