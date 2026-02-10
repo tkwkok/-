@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { GoogleGenAI } from "@google/genai";
 import { AnalysisMode, HanjaItem, FortuneResult } from './types';
 import { getHangulStroke, analyzeFortune } from './services/strokeEngine';
@@ -53,12 +52,9 @@ const App: React.FC = () => {
     window.scrollTo(0, 0);
   }, [view]);
 
-  // 한글 입력 핸들러 개선: 자동 포커스 이동은 한글 조합(IME)을 방해하므로 제거하거나 신중하게 처리해야 함
-  // 여기서는 조합 방해를 막기 위해 자동 이동을 제거하고 글자 수 제한만 적용
+  // 한글 입력 핸들러: IME 조합 방해를 최소화하기 위해 단순하게 유지
   const handleHangulInput = (key: 's' | 'n1' | 'n2', val: string) => {
-    // 마지막 입력된 한 글자만 유지
-    const char = val.length > 0 ? val.charAt(val.length - 1) : '';
-    setNameInput(prev => ({ ...prev, [key]: char }));
+    setNameInput(prev => ({ ...prev, [key]: val }));
   };
 
   const runAnalysis = async () => {
@@ -70,10 +66,14 @@ const App: React.FC = () => {
         alert("성함 3글자를 모두 입력해주세요."); 
         return; 
       }
-      sStrokes = getHangulStroke(nameInput.s);
-      n1Strokes = getHangulStroke(nameInput.n1);
-      n2Strokes = getHangulStroke(nameInput.n2);
-      sChar = nameInput.s; n1Char = nameInput.n1; n2Char = nameInput.n2;
+      // 입력된 글자 중 첫 글자만 사용 (IME 완료 후 상태)
+      sChar = nameInput.s[0];
+      n1Char = nameInput.n1[0];
+      n2Char = nameInput.n2[0];
+      
+      sStrokes = getHangulStroke(sChar);
+      n1Strokes = getHangulStroke(n1Char);
+      n2Strokes = getHangulStroke(n2Char);
     } else {
       if (hanjaItems.some(x => x === null)) { alert("한자 3자를 모두 선택해주세요."); return; }
       sStrokes = hanjaItems[0]!.s; n1Strokes = hanjaItems[1]!.s; n2Strokes = hanjaItems[2]!.s;
@@ -85,8 +85,6 @@ const App: React.FC = () => {
     setIsAnalyzed(false);
     
     const count = incrementCount();
-    
-    // 광고 노출 여부 결정
     const shouldShowAd = count % 5 === 0;
 
     const baseResults = analyzeFortune(sStrokes, n1Strokes, n2Strokes, sChar, n1Char, n2Char);
@@ -95,7 +93,7 @@ const App: React.FC = () => {
     try {
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
       const fullName = mode === AnalysisMode.HANGUL 
-        ? `${nameInput.s}${nameInput.n1}${nameInput.n2}` 
+        ? `${sChar}${n1Char}${n2Char}` 
         : hanjaItems.map(h => h?.h).join('');
       
       const prompt = `당신은 대한민국 최고의 정통 주역 성명학 권위자입니다. 다음 이름 '${fullName}'에 대해 전문가 수준의 심층 분석 리포트를 작성해 주세요. 
@@ -192,6 +190,7 @@ const App: React.FC = () => {
                         {mode === AnalysisMode.HANGUL ? (
                           <input 
                             type="text"
+                            maxLength={1}
                             value={nameInput[key as 's'|'n1'|'n2']}
                             onChange={(e) => handleHangulInput(key as 's'|'n1'|'n2', e.target.value)}
                             className="input-premium cursor-text transition-all hover:scale-105 focus:scale-105"
