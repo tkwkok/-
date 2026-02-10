@@ -37,7 +37,7 @@ const App: React.FC = () => {
       timer = setInterval(() => {
         idx = (idx + 1) % loadingMessages.length;
         setLoadingMsg(loadingMessages[idx]);
-      }, 2500);
+      }, 3000); // 3초로 조정하여 가독성 향상
     }
     return () => clearInterval(timer);
   }, [isLoading]);
@@ -59,8 +59,8 @@ const App: React.FC = () => {
    * 조합이 깨지지 않도록 마지막에 입력된 글자 덩어리만 반영합니다.
    */
   const handleHangulInput = (key: 's' | 'n1' | 'n2', val: string) => {
-    // 사용자가 여러 글자를 입력하려 할 때 마지막 글자만 취함 (조합 방지 X)
-    const cleanedValue = val.length > 1 ? val.slice(-1) : val;
+    // 입력값에서 가장 최근에 완성되거나 조합 중인 마지막 글자만 유지
+    const cleanedValue = val.length > 0 ? val.slice(-1) : "";
     setNameInput(prev => ({ ...prev, [key]: cleanedValue }));
   };
 
@@ -69,7 +69,7 @@ const App: React.FC = () => {
     let sChar = '', n1Char = '', n2Char = '';
 
     if (mode === AnalysisMode.HANGUL) {
-      // 각 필드에서 공백 제거 후 첫 글자만 사용
+      // 각 필드에서 공백 제거 후 첫 글자만 사용 (필드가 비어있지 않은지 확인)
       sChar = nameInput.s.trim().charAt(0);
       n1Char = nameInput.n1.trim().charAt(0);
       n2Char = nameInput.n2.trim().charAt(0);
