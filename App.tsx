@@ -55,10 +55,11 @@ const App: React.FC = () => {
   /**
    * 한글 입력 핸들러: 
    * IME 조합 중 글자가 끊기지 않도록 마지막 완성/조합 중인 문자만 안전하게 추출합니다.
+   * maxLength={2} 설정과 함께 사용하여 조합 버퍼를 확보합니다.
    */
   const handleHangulInput = (key: 's' | 'n1' | 'n2', val: string) => {
-    // 입력값에서 가장 마지막 글자만 취하여 상태 업데이트 (IME 조합 버퍼 유지)
-    const latestChar = val.length > 0 ? val.charAt(val.length - 1) : "";
+    // 입력값에서 가장 마지막 글자(덩어리)만 취하여 상태 업데이트 (IME 조합 버퍼 유지)
+    const latestChar = val.length > 0 ? val.slice(-1) : "";
     setNameInput(prev => ({ ...prev, [key]: latestChar }));
   };
 
@@ -67,17 +68,22 @@ const App: React.FC = () => {
     let sChar = '', n1Char = '', n2Char = '';
 
     if (mode === AnalysisMode.HANGUL) {
-      // 분석 직전 공백 제거 및 첫 글자 추출
-      sChar = nameInput.s.trim().charAt(0);
-      n1Char = nameInput.n1.trim().charAt(0);
-      n2Char = nameInput.n2.trim().charAt(0);
+      // 분석 직전 공백 제거 및 문자 추출
+      sChar = nameInput.s.trim();
+      n1Char = nameInput.n1.trim();
+      n2Char = nameInput.n2.trim();
 
-      // 3글자가 모두 채워졌는지 엄격히 체크
-      if (!sChar || !n1Char || !n2Char) { 
-        alert("성함 3글자를 모두 정확히 입력해 주세요."); 
+      // 성함 3글자가 모두 공백 없이 채워졌는지 엄격히 체크
+      if (sChar.length === 0 || n1Char.length === 0 || n2Char.length === 0) { 
+        alert("성함 3글자를 모두 빈칸 없이 입력해 주세요."); 
         return; 
       }
       
+      // 혹시라도 여러 글자가 입력된 경우 첫 글자만 사용
+      sChar = sChar.charAt(0);
+      n1Char = n1Char.charAt(0);
+      n2Char = n2Char.charAt(0);
+
       sStrokes = getHangulStroke(sChar);
       n1Strokes = getHangulStroke(n1Char);
       n2Strokes = getHangulStroke(n2Char);
