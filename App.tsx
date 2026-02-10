@@ -218,16 +218,54 @@ const App: React.FC = () => {
         {view === 'consult' && (
           <div className="fade-in-up py-8">
              <header className="mb-16 text-center space-y-4">
-               <span className="text-brand-gold font-black text-[10px] tracking-[0.5em] uppercase block">VIP Consulting</span>
+               <span className="text-brand-gold font-black text-[10px] tracking-[0.5em] uppercase block">Exclusive Service</span>
                <h2 className="text-5xl font-black text-brand-ink tracking-tighter">프리미엄 1:1 상담</h2>
              </header>
+
+             <div className="bg-white rounded-[2.5rem] p-10 mb-12 border-2 border-brand-gold/20 shadow-xl space-y-8 relative overflow-hidden">
+               <div className="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
+                 <div className="text-7xl font-black italic">VIP</div>
+               </div>
+               <div className="space-y-4 relative z-10">
+                 <h4 className="font-black text-brand-red text-lg flex items-center gap-2 tracking-tighter uppercase">
+                   <span className="w-2 h-2 bg-brand-red rounded-full"></span>
+                   Expert Deep Analysis
+                 </h4>
+                 <p className="text-stone-800 text-sm font-bold leading-relaxed">
+                   명경 프리미엄 서비스는 단순 분석을 넘어 인생의 길을 열어주는 고품격 작명 서비스를 제공합니다.
+                 </p>
+                 <div className="grid gap-3 pt-4">
+                   {[
+                     "한자 64괘 정밀 감정",
+                     "발음오행 상생 진단",
+                     "발음음양 조화 분석",
+                     "81수리 정통 작명법 적용",
+                     "자원오행 보완",
+                     "사주 용신(用神) 기반 최적화"
+                   ].map((item, idx) => (
+                     <div key={idx} className="flex items-center gap-3 text-stone-600 text-[13px] font-bold">
+                       <span className="text-brand-gold">✦</span>
+                       {item}
+                     </div>
+                   ))}
+                 </div>
+                 <div className="mt-8 p-4 bg-brand-red/5 rounded-2xl border border-brand-red/10">
+                   <p className="text-brand-red text-xs font-black text-center tracking-tight">
+                     ※ 한자64괘, 발음오행, 발음음양, 81수리, 자원오행, 용신분석까지 포함한 작명 서비스 제공(본 서비스는 유료로 제공됩니다)
+                   </p>
+                 </div>
+               </div>
+             </div>
+
              <form action="https://formspree.io/f/xpqjwjjw" method="POST" className="space-y-6">
                <div className="grid grid-cols-2 gap-4">
-                 <input name="name" required placeholder="성함" className="p-5 bg-white rounded-2xl border border-stone-100 outline-none font-bold text-sm" />
-                 <input name="phone" required placeholder="연락처" className="p-5 bg-white rounded-2xl border border-stone-100 outline-none font-bold text-sm" />
+                 <input name="name" required placeholder="성함" className="p-5 bg-white rounded-2xl border border-stone-100 outline-none font-bold text-sm shadow-sm focus:border-brand-red transition-all" />
+                 <input name="phone" required placeholder="연락처" className="p-5 bg-white rounded-2xl border border-stone-100 outline-none font-bold text-sm shadow-sm focus:border-brand-red transition-all" />
                </div>
-               <textarea name="memo" rows={5} placeholder="상담 내용을 입력해 주세요" className="w-full p-6 bg-white rounded-2xl border border-stone-100 outline-none font-bold text-sm resize-none"></textarea>
-               <button type="submit" className="w-full py-6 bg-brand-red text-white font-black rounded-2xl text-base shadow-2xl hover:bg-brand-ink transition-all">신청하기</button>
+               <textarea name="memo" rows={5} placeholder="상담 희망 내용 또는 태어난 시각(사주 분석용)" className="w-full p-6 bg-white rounded-2xl border border-stone-100 outline-none font-bold text-sm resize-none shadow-sm focus:border-brand-red transition-all"></textarea>
+               <button type="submit" className="w-full py-6 bg-brand-red text-white font-black rounded-2xl text-base shadow-2xl hover:bg-brand-ink transition-all active:scale-95">
+                 프리미엄 상담 신청하기
+               </button>
              </form>
           </div>
         )}
