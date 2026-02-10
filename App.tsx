@@ -69,7 +69,7 @@ const App: React.FC = () => {
       3. 81수리: 원형이정(元亨利貞) 4격이 삶의 주기(초년, 중년, 장년, 노년)에 미치는 영향
       4. 자원오행 제언: 한자의 근원적 에너지가 사주의 부족한 기운을 어떻게 보완할 수 있는지
       5. 용신분석 기반 운세: 이름이 가진 '재물운', '금전운', '성공운'에 미치는 파동과 잠재력을 상세히 기술
-      문체는 매우 격조 있고 정중하게 작성하며, 사용자가 삶의 희망을 발견할 수 있도록 품위 있는 언어를 사용해 주세요. 특히 '재물운'에 대해 희망적인 메시지를 담아주세요.`;
+      문체는 매우 격조 있고 정중하게 작성하며, 사용자가 삶의 희망을 발견할 수 있도록 품위 있는 언어를 사용해 주세요. 특히 '재물운'에 대해 매우 긍정적이고 희망적인 메시지를 담아주세요.`;
 
       const response = await ai.models.generateContent({
         model: 'gemini-3-flash-preview',
@@ -97,10 +97,10 @@ const App: React.FC = () => {
 
   return (
     <div className="flex flex-col min-h-screen">
-      {/* 고정 헤더 - 스타일 정밀 조정 */}
-      <nav className="sticky top-0 z-40 bg-brand-paper/90 backdrop-blur-lg h-16 flex items-center justify-between px-6 border-b border-brand-gold/10 shadow-sm">
+      {/* 고정 헤더 - 디자인 미세 정밀 조정 */}
+      <nav className="sticky top-0 z-40 bg-brand-paper/95 backdrop-blur-md h-16 flex items-center justify-between px-6 border-b border-brand-gold/10 shadow-sm">
         <button onClick={() => setView('main')} className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-brand-red rounded-lg flex items-center justify-center shadow-md">
+          <div className="w-8 h-8 bg-brand-red rounded-lg flex items-center justify-center shadow-lg transition-transform active:scale-95">
             <span className="text-white text-sm font-black">明</span>
           </div>
           <span className="text-brand-ink text-lg font-black tracking-tighter">명경</span>
@@ -127,11 +127,11 @@ const App: React.FC = () => {
             </div>
 
             <main>
-              <div className="premium-oriental-card p-10 mb-20 bg-white">
+              <div className="premium-oriental-card p-10 mb-20 bg-white shadow-2xl">
                 <div className="grid grid-cols-3 gap-2 mb-16 relative">
                   {(mode === AnalysisMode.HANGUL ? ['s', 'n1', 'n2'] : [0, 1, 2]).map((key, idx) => (
                     <div key={idx} className="relative flex flex-col items-center">
-                      <div className="bg-label-text opacity-[0.05] select-none">{idx === 0 ? '姓' : idx === 1 ? '名' : '字'}</div>
+                      <div className="bg-label-text opacity-[0.03] select-none">{idx === 0 ? '姓' : idx === 1 ? '名' : '字'}</div>
                       <div className="w-full relative z-10">
                         {mode === AnalysisMode.HANGUL ? (
                           <input 
@@ -166,8 +166,8 @@ const App: React.FC = () => {
               <div id="result-section">
                 {isAnalyzed && (
                   <div className="space-y-12 fade-in-up">
-                    <div className="bg-white rounded-[2.5rem] p-10 border-t-[10px] border-brand-gold shadow-xl relative">
-                      <div className="absolute top-6 right-8 text-brand-gold opacity-10 font-black text-6xl italic select-none">評</div>
+                    <div className="bg-white rounded-[2.5rem] p-10 border-t-[10px] border-brand-gold shadow-xl relative overflow-hidden">
+                      <div className="absolute top-6 right-8 text-brand-gold opacity-[0.07] font-black text-6xl italic select-none">評</div>
                       <h4 className="text-brand-red text-xl font-black mb-6 flex items-center gap-2">
                         <span className="w-1.5 h-6 bg-brand-red rounded-full"></span>
                         AI 전문 성명 감정서
@@ -178,7 +178,7 @@ const App: React.FC = () => {
                       {results.map((res, i) => <LuckCard key={i} fortune={res} />)}
                     </div>
                     
-                    {/* 상담 유도 섹션 고정 */}
+                    {/* VIP 상담 유도 섹션 */}
                     <div className="bg-brand-ink text-white rounded-[2.5rem] p-10 shadow-2xl mt-20 relative overflow-hidden border border-brand-gold/20">
                       <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-brand-red/10 rounded-full blur-3xl"></div>
                       <span className="text-brand-gold text-[10px] font-black tracking-widest uppercase mb-4 block">1:1 Premium Service</span>
@@ -271,7 +271,6 @@ const App: React.FC = () => {
           </div>
         )}
 
-        {/* 하단 정보 섹션 */}
         <footer className="mt-40 border-t border-stone-200 pt-16 pb-12 text-center bg-white/50">
           <div className="flex justify-center gap-8 text-[9px] font-black text-stone-400 tracking-widest uppercase mb-10">
             <button className="hover:text-brand-red transition-colors">이용약관</button>
@@ -283,15 +282,11 @@ const App: React.FC = () => {
             본 서비스는 정통 성명학 원리를 기반으로 한 AI 분석 리포트입니다.<br/>
             모든 분석 결과는 성명학적 가이드라인이며, 중요한 결정은 반드시 전문가 상담을 권장합니다.
           </p>
-          <div className="mt-8 flex justify-center gap-2 opacity-20">
-             <div className="w-8 h-1 bg-stone-300 rounded-full"></div>
-             <div className="w-4 h-1 bg-stone-300 rounded-full"></div>
-          </div>
         </footer>
       </div>
 
-      {/* 모바일 하단 탭 바 */}
-      <div className="mobile-nav md:hidden border-t border-stone-100 shadow-[0_-5px_15px_-5px_rgba(0,0,0,0.05)] bg-white/95">
+      {/* 모바일 하단 탭 바 - 디자인 완성도 강화 */}
+      <div className="mobile-nav md:hidden border-t border-stone-100 shadow-[0_-5px_20px_-5px_rgba(0,0,0,0.08)] bg-white/95">
         <button onClick={() => setView('main')} className={`flex flex-col items-center gap-1 transition-all ${view === 'main' ? 'text-brand-red scale-110' : 'text-stone-300'}`}>
           <div className="text-xl">{view === 'main' ? '⛩️' : '🏠'}</div>
           <span className="text-[9px] font-black uppercase tracking-tighter">홈</span>

@@ -1,10 +1,9 @@
-
-import { HANGUL_STROKES_ENGINE, HEXAGRAM_DB, COMMON_HANJA } from '../constants';
+import { HANGUL_STROKES_ENGINE, HEXAGRAM_DB } from '../constants';
 import { FortuneResult } from '../types';
 
 const getMod8 = (n: number) => (n % 8 === 0 ? 8 : n % 8);
 
-// 발음오행 판별 (초성 기준)
+// 발음오행 판별 (초성 기준 정밀 판별)
 const getFiveElements = (char: string) => {
   const code = char.charCodeAt(0) - 0xAC00;
   if (code < 0 || code > 11171) return '미상';
@@ -27,6 +26,7 @@ export const getHangulStroke = (char: string): number => {
   if (!char) return 0;
   const code = char.charCodeAt(0) - 0xAC00;
   if (code < 0 || code > 11171) return 0;
+  
   const cho = Math.floor(code / 588);
   const jung = Math.floor((code % 588) / 28);
   const jong = code % 28;
