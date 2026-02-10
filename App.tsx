@@ -37,7 +37,7 @@ const App: React.FC = () => {
       timer = setInterval(() => {
         idx = (idx + 1) % loadingMessages.length;
         setLoadingMsg(loadingMessages[idx]);
-      }, 3000); // 3초로 조정하여 가독성 향상
+      }, 3000); // 3초 간격으로 로딩 메시지 순환
     }
     return () => clearInterval(timer);
   }, [isLoading]);
@@ -54,14 +54,12 @@ const App: React.FC = () => {
 
   /**
    * 한글 입력 핸들러: 
-   * IME(한글 조합) 중에는 maxLength가 조합을 방해할 수 있으므로 
-   * 입력 시에는 약간의 여유(maxLength=2)를 허용하고, 상태 업데이트 시에는
-   * 조합이 깨지지 않도록 마지막에 입력된 글자 덩어리만 반영합니다.
+   * IME 조합 중 글자가 끊기지 않도록 마지막 완성/조합 중인 문자만 안전하게 추출합니다.
    */
   const handleHangulInput = (key: 's' | 'n1' | 'n2', val: string) => {
-    // 입력값에서 가장 최근에 완성되거나 조합 중인 마지막 글자만 유지
-    const cleanedValue = val.length > 0 ? val.slice(-1) : "";
-    setNameInput(prev => ({ ...prev, [key]: cleanedValue }));
+    // 입력값에서 가장 마지막 글자만 취하여 상태 업데이트 (IME 조합 버퍼 유지)
+    const latestChar = val.length > 0 ? val.charAt(val.length - 1) : "";
+    setNameInput(prev => ({ ...prev, [key]: latestChar }));
   };
 
   const runAnalysis = async () => {
@@ -69,13 +67,14 @@ const App: React.FC = () => {
     let sChar = '', n1Char = '', n2Char = '';
 
     if (mode === AnalysisMode.HANGUL) {
-      // 각 필드에서 공백 제거 후 첫 글자만 사용 (필드가 비어있지 않은지 확인)
+      // 분석 직전 공백 제거 및 첫 글자 추출
       sChar = nameInput.s.trim().charAt(0);
       n1Char = nameInput.n1.trim().charAt(0);
       n2Char = nameInput.n2.trim().charAt(0);
 
+      // 3글자가 모두 채워졌는지 엄격히 체크
       if (!sChar || !n1Char || !n2Char) { 
-        alert("성함 3글자를 정확히 입력해주세요."); 
+        alert("성함 3글자를 모두 정확히 입력해 주세요."); 
         return; 
       }
       
@@ -83,7 +82,7 @@ const App: React.FC = () => {
       n1Strokes = getHangulStroke(n1Char);
       n2Strokes = getHangulStroke(n2Char);
     } else {
-      if (hanjaItems.some(x => x === null)) { alert("한자 3자를 모두 선택해주세요."); return; }
+      if (hanjaItems.some(x => x === null)) { alert("한자 3자를 모두 선택해 주세요."); return; }
       sStrokes = hanjaItems[0]!.s; n1Strokes = hanjaItems[1]!.s; n2Strokes = hanjaItems[2]!.s;
       sChar = hanjaItems[0]!.k; n1Char = hanjaItems[1]!.k; n2Char = hanjaItems[2]!.k;
     }
