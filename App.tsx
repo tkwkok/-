@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState, useEffect, useRef } from 'react';
 import { GoogleGenAI } from "@google/genai";
 import { AnalysisMode, HanjaItem, FortuneResult } from './types';
 import { getHangulStroke, analyzeFortune } from './services/strokeEngine';
@@ -18,7 +19,31 @@ const App: React.FC = () => {
   const [aiAnalysis, setAiAnalysis] = useState<string | null>(null);
   const [isAnalyzed, setIsAnalyzed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingMsg, setLoadingMsg] = useState('');
   const [showAd, setShowAd] = useState(false);
+
+  const n1Ref = useRef<HTMLInputElement>(null);
+  const n2Ref = useRef<HTMLInputElement>(null);
+
+  const loadingMessages = [
+    "성명의 파동을 정밀 분석하고 있습니다...",
+    "주역 64괘와 81수리를 대조하는 중입니다...",
+    "우주의 기운을 문장으로 치환하고 있습니다...",
+    "당신의 운명 지도를 세밀하게 그리고 있습니다...",
+    "거울처럼 맑은 지혜를 모으는 중입니다..."
+  ];
+
+  useEffect(() => {
+    if (isLoading) {
+      let idx = 0;
+      setLoadingMsg(loadingMessages[0]);
+      const timer = setInterval(() => {
+        idx = (idx + 1) % loadingMessages.length;
+        setLoadingMsg(loadingMessages[idx]);
+      }, 2000);
+      return () => clearInterval(timer);
+    }
+  }, [isLoading]);
 
   const incrementCount = () => {
     const count = parseInt(localStorage.getItem('mg_analysis_count') || '0') + 1;
@@ -30,23 +55,36 @@ const App: React.FC = () => {
     window.scrollTo(0, 0);
   }, [view]);
 
+  const handleHangulInput = (key: 's' | 'n1' | 'n2', val: string) => {
+    const char = val.substring(0, 1);
+    setNameInput(prev => ({ ...prev, [key]: char }));
+    
+    // 자동 포커스 이동
+    if (char && key === 's') n1Ref.current?.focus();
+    if (char && key === 'n1') n2Ref.current?.focus();
+  };
+
   const runAnalysis = async () => {
     let sStrokes = 0, n1Strokes = 0, n2Strokes = 0;
     let sChar = '', n1Char = '', n2Char = '';
 
     if (mode === AnalysisMode.HANGUL) {
-      if (!nameInput.s || !nameInput.n1 || !nameInput.n2) { alert("성함을 모두 입력해주세요."); return; }
+      if (!nameInput.s || !nameInput.n1 || !nameInput.n2) { 
+        alert("성함 3글자를 모두 입력해주세요."); 
+        return; 
+      }
       sStrokes = getHangulStroke(nameInput.s);
       n1Strokes = getHangulStroke(nameInput.n1);
       n2Strokes = getHangulStroke(nameInput.n2);
       sChar = nameInput.s; n1Char = nameInput.n1; n2Char = nameInput.n2;
     } else {
-      if (hanjaItems.some(x => x === null)) { alert("한자를 모두 선택해주세요."); return; }
+      if (hanjaItems.some(x => x === null)) { alert("한자 3자를 모두 선택해주세요."); return; }
       sStrokes = hanjaItems[0]!.s; n1Strokes = hanjaItems[1]!.s; n2Strokes = hanjaItems[2]!.s;
       sChar = hanjaItems[0]!.k; n1Char = hanjaItems[1]!.k; n2Char = hanjaItems[2]!.k;
     }
 
     setIsLoading(true);
+    setAiAnalysis(null);
     
     const count = incrementCount();
     if (count % 5 === 0) {
@@ -58,17 +96,19 @@ const App: React.FC = () => {
 
     try {
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
-      const fullName = mode === AnalysisMode.HANGUL ? `${nameInput.s}${nameInput.n1}${nameInput.n2}` : hanjaItems.map(h => h?.h).join('');
+      const fullName = mode === AnalysisMode.HANGUL 
+        ? `${nameInput.s}${nameInput.n1}${nameInput.n2}` 
+        : hanjaItems.map(h => h?.h).join('');
       
       const prompt = `당신은 대한민국 최고의 정통 주역 성명학 권위자입니다. 다음 이름 '${fullName}'에 대해 전문가 수준의 심층 분석 리포트를 작성해 주세요. 
       분석 시 다음 5대 핵심 요소를 반드시 전문적으로 다뤄주세요:
       1. 발음오행: 소리의 파동(상생/상극)이 사회적 평판, 대인관계의 질, 그리고 외부로부터 오는 기회에 미치는 영향.
       2. 발음음양: 획수의 음양 균형이 심리적 안정성과 인생의 굴곡을 어떻게 조율하는지.
       3. 81수리 원형이정(元亨利貞): 초년(원격), 중년(형격), 장년(이격), 총운(정격)의 4격 수리가 인생 주기별로 가져올 구체적인 변화와 성취.
-      4. 재물운 및 사회적 성공: 성명의 기운이 금전의 유입과 보존, 그리고 직업적 명망에 미치는 긍정적 파동을 매우 상세하고 희망적으로 기술.
-      5. 종합 제언: 자원오행의 관점에서 부족한 기운을 일상에서 어떻게 보충할 수 있는지(색상, 방향 등 소품 활용법 포함).
+      4. 재물운 및 사회적 성공: 성명의 기운이 금전의 유입과 보존, 그리고 직업적 명망에 미치는 긍정적 파동을 매우 상세하고 희망적으로 기술. 특히 재물운이 강력하게 상승하는 시점과 그 이유를 명확히 짚어주세요.
+      5. 종합 제언: 자원오행의 관점에서 부족한 기운을 일상에서 어떻게 보충할 수 있는지(행운의 색상, 행운의 방향, 인테리어 소품 활용법 포함).
 
-      문체는 매우 격조 있고 정중하며, 사용자가 자신의 삶에 대해 깊은 자부심과 희망을 느낄 수 있도록 우아한 언어를 사용해 주세요. 특히 '경제적 번영'과 '사회적 성공'에 초점을 맞춘 심층적 통찰을 포함해 주세요.`;
+      문체는 매우 격조 있고 정중하며, 사용자가 자신의 삶에 대해 깊은 자부심과 희망을 느낄 수 있도록 우아하고 품위 있는 언어를 사용해 주세요. 특히 '경제적 번영'과 '사회적 번영'이 이름의 기운을 통해 어떻게 실현될 수 있는지에 대한 심층적 통찰을 포함해 주세요.`;
 
       const response = await ai.models.generateContent({
         model: 'gemini-3-flash-preview',
@@ -77,7 +117,7 @@ const App: React.FC = () => {
       setAiAnalysis(response.text || "분석 리포트를 생성하는 중 오류가 발생했습니다.");
     } catch (e) {
       console.error(e);
-      setAiAnalysis("AI 분석 기능을 일시적으로 사용할 수 없습니다. 기본 분석 수치를 참고해 주세요.");
+      setAiAnalysis("AI 분석 기능을 일시적으로 사용할 수 없습니다. 기본 수리 분석 결과를 참고해 주세요.");
     }
     
     if (count % 5 !== 0) {
@@ -97,7 +137,21 @@ const App: React.FC = () => {
 
   return (
     <div className="flex flex-col min-h-screen">
-      {/* 고정 헤더 - Refined Navigation */}
+      {/* 로딩 인디케이터 오버레이 */}
+      {isLoading && (
+        <div className="fixed inset-0 z-[100] bg-brand-paper/80 backdrop-blur-md flex flex-col items-center justify-center p-10 animate-fade-in">
+          <div className="relative mb-8">
+            <div className="w-24 h-24 border-4 border-brand-gold/20 border-t-brand-red rounded-full animate-spin"></div>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span className="text-brand-red font-black text-xl">明</span>
+            </div>
+          </div>
+          <p className="text-brand-ink font-black text-lg text-center animate-pulse">{loadingMsg}</p>
+          <p className="text-stone-400 text-xs mt-4">정밀한 분석을 위해 최대 10초가 소요될 수 있습니다.</p>
+        </div>
+      )}
+
+      {/* 고정 헤더 */}
       <nav className="sticky top-0 z-40 bg-white/80 backdrop-blur-xl h-16 flex items-center justify-between px-6 border-b border-stone-100 shadow-[0_1px_10px_rgba(0,0,0,0.02)] transition-all">
         <button onClick={() => setView('main')} className="flex items-center gap-2 group">
           <div className="w-8 h-8 bg-brand-red rounded-lg flex items-center justify-center shadow-lg group-hover:rotate-6 transition-transform">
@@ -128,7 +182,7 @@ const App: React.FC = () => {
 
             <main>
               <div className="premium-oriental-card p-12 mb-20 bg-white shadow-2xl relative">
-                <div className="absolute top-4 right-4 text-[8px] font-black text-stone-300 tracking-widest uppercase opacity-50">Authentication V2</div>
+                <div className="absolute top-4 right-4 text-[8px] font-black text-stone-300 tracking-widest uppercase opacity-50">Traditional Logic V3</div>
                 <div className="grid grid-cols-3 gap-4 mb-16 relative">
                   {(mode === AnalysisMode.HANGUL ? ['s', 'n1', 'n2'] : [0, 1, 2]).map((key, idx) => (
                     <div key={idx} className="relative flex flex-col items-center">
@@ -136,9 +190,10 @@ const App: React.FC = () => {
                       <div className="w-full relative z-10">
                         {mode === AnalysisMode.HANGUL ? (
                           <input 
+                            ref={idx === 1 ? n1Ref : idx === 2 ? n2Ref : null}
                             type="text"
                             value={nameInput[key as 's'|'n1'|'n2']}
-                            onChange={(e) => setNameInput(prev => ({ ...prev, [key]: e.target.value.substring(0,1) }))}
+                            onChange={(e) => handleHangulInput(key as 's'|'n1'|'n2', e.target.value)}
                             className="input-premium cursor-text transition-all hover:scale-105 focus:scale-105"
                             placeholder="?"
                           />
@@ -153,28 +208,33 @@ const App: React.FC = () => {
                         <div className="input-border"></div>
                       </div>
                       <span className="stroke-count-text">
-                        {(mode === AnalysisMode.HANGUL ? getHangulStroke(nameInput[key as 's'|'n1'|'n2']) : hanjaItems[idx]?.s) || 0} STROKES
+                        {(mode === AnalysisMode.HANGUL ? getHangulStroke(nameInput[key as 's'|'n1'|'n2']) : hanjaItems[idx]?.s) || 0} 획
                       </span>
                     </div>
                   ))}
                 </div>
 
                 <button onClick={runAnalysis} disabled={isLoading} className="btn-destiny active:scale-95 group">
-                  <span className="relative z-10">{isLoading ? 'ANALYZING...' : '운명 리포트 생성'}</span>
+                  <span className="relative z-10">{isLoading ? '운명 해독 중...' : '운명 리포트 생성'}</span>
                 </button>
+                <p className="text-[10px] text-stone-400 text-center mt-6 font-medium">※ 성명학 엑셀 로직 및 주역 64괘 분석 엔진 탑재</p>
               </div>
 
               <div id="result-section">
                 {isAnalyzed && (
                   <div className="space-y-16 fade-in-up">
-                    <div className="bg-white rounded-[3rem] p-12 border-t-[12px] border-brand-red shadow-2xl relative overflow-hidden">
-                      <div className="absolute top-10 right-10 text-brand-gold opacity-[0.05] font-black text-8xl italic select-none">鑑定</div>
-                      <h4 className="text-brand-red text-xl font-black mb-8 flex items-center gap-3">
-                        <span className="w-2 h-8 bg-brand-gold rounded-full"></span>
-                        AI 전문 성명 감정서
-                      </h4>
-                      <p className="text-stone-700 leading-loose text-base font-medium whitespace-pre-wrap">{aiAnalysis}</p>
-                    </div>
+                    {aiAnalysis && (
+                      <div className="bg-white rounded-[3rem] p-12 border-t-[12px] border-brand-red shadow-2xl relative overflow-hidden">
+                        <div className="absolute top-10 right-10 text-brand-gold opacity-[0.05] font-black text-8xl italic select-none">鑑定</div>
+                        <h4 className="text-brand-red text-xl font-black mb-8 flex items-center gap-3">
+                          <span className="w-2 h-8 bg-brand-gold rounded-full"></span>
+                          AI 전문 성명 감정서
+                        </h4>
+                        <div className="text-stone-700 leading-loose text-base font-medium whitespace-pre-wrap analysis-content">
+                          {aiAnalysis}
+                        </div>
+                      </div>
+                    )}
                     <div className="grid gap-10">
                       {results.map((res, i) => <LuckCard key={i} fortune={res} />)}
                     </div>
@@ -183,7 +243,7 @@ const App: React.FC = () => {
                       <div className="absolute -right-20 -bottom-20 w-64 h-64 bg-brand-red/10 rounded-full blur-[100px]"></div>
                       <span className="text-brand-gold text-[10px] font-black tracking-[0.4em] uppercase mb-6 block">Premium 1:1 Care</span>
                       <h3 className="text-3xl font-black mb-6 tracking-tighter leading-tight">평생을 함께할 귀한 성명,<br/>명경이 정성으로 짓습니다.</h3>
-                      <button onClick={() => setView('consult')} className="w-full py-4 bg-brand-gold text-brand-ink font-black rounded-xl text-sm shadow-lg hover:bg-white transition-all transform active:scale-95">
+                      <button onClick={() => setView('consult')} className="w-full py-5 bg-brand-gold text-brand-ink font-black rounded-2xl text-sm shadow-xl hover:bg-white transition-all transform active:scale-95">
                         프리미엄 상담 예약하기
                       </button>
                     </div>

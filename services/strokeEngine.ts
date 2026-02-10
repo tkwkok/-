@@ -62,7 +62,7 @@ export const analyzeFortune = (s: number, n1: number, n2: number, sChar: string,
     category: '오행',
     title: '발음오행(發音五行)',
     name: `${e1}-${e2}-${e3}`,
-    description: `성명의 울림이 ${e1}, ${e2}, ${e3}의 파동을 형성하여 외부 세계와 공명합니다. 상생의 흐름은 사회적 지위를 높이고 예기치 못한 귀인을 불러오는 강력한 자석 역할을 합니다. 특히 금전적 흐름의 원활함과 사회적 평판을 좌우하는 핵심 요소입니다.`,
+    description: `성명의 울림이 ${e1}, ${e2}, ${e3}의 기운으로 이어지며 사회적 발산력을 형성합니다. 오행의 상생은 단순한 호감을 넘어 사회적 지위를 공고히 하고, 재물이 모이는 통로를 넓히는 기운을 가지고 있습니다. 소리의 파동이 조화로울수록 인덕이 따르고 금전적 기회가 스스로 찾아오는 형국입니다.`,
     status: 'neutral',
     tags: [e1, e2, e3]
   });
@@ -77,8 +77,8 @@ export const analyzeFortune = (s: number, n1: number, n2: number, sChar: string,
     title: '음양조화(陰陽調和)',
     name: `${y1}-${y2}-${y3}`,
     description: isBalanced 
-      ? "하늘과 땅의 기운이 조화롭게 섞여 인생의 파도가 완만하고 평온합니다. 이는 정서적 안정뿐만 아니라 재물 보존 능력이 뛰어남을 의미하며, 장기적인 성공을 뒷받침하는 탄탄한 심리적 기초가 됩니다." 
-      : "기운이 한쪽으로 집중되어 있어 독보적인 카리스마나 특정 분야에서의 천재적 재능을 발휘할 수 있습니다. 환경의 조화를 통해 부족한 기운을 보완하면 오히려 독보적인 도약의 기회가 됩니다.",
+      ? "음양의 완벽한 배치는 인생의 험난한 파고를 유연하게 넘기는 지혜를 상징합니다. 이는 심리적 안정감을 줄 뿐만 아니라, 결정적인 순간에 재물과 명예를 지켜내는 견고한 방패 역할을 하여 지속 가능한 번영을 이끌어냅니다." 
+      : "기운이 한 방향으로 응집되어 있어 추진력과 카리스마가 매우 강합니다. 이러한 강한 기운은 특정 분야에서 독보적인 성취를 이루는 원동력이 되며, 부족한 기운을 외부 환경(색상, 방위 등)으로 보충할 때 더욱 빛을 발합니다.",
     status: isBalanced ? 'good' : 'bad'
   });
 
@@ -97,7 +97,7 @@ export const analyzeFortune = (s: number, n1: number, n2: number, sChar: string,
     category: '수리',
     title: '원격(元格): 초년/기초운',
     name: wonHex.name,
-    description: `수리 ${won}획. 인생의 봄에 해당하는 시기로, 부모의 덕과 학업 성취도를 결정짓는 기초 운세입니다. ${wonHex.desc}`,
+    description: `수리 ${won}획. 부모의 덕과 학업의 기틀을 다지는 운세입니다. 기초가 튼튼하여 이후의 성장을 뒷받침합니다. ${wonHex.desc}`,
     status: wonHex.status as any
   });
 
@@ -105,7 +105,7 @@ export const analyzeFortune = (s: number, n1: number, n2: number, sChar: string,
     category: '수리',
     title: '형격(亨格): 중년/성공운',
     name: hHex.name,
-    description: `수리 ${hyung}획. 사회적 지위와 경제적 기반이 확립되는 인생의 황금기입니다. ${hHex.desc}`,
+    description: `수리 ${hyung}획. 사회적으로 가장 왕성하게 활동하며 부와 명예를 쌓아가는 황금기입니다. ${hHex.desc}`,
     status: hHex.status as any
   });
 
@@ -113,7 +113,7 @@ export const analyzeFortune = (s: number, n1: number, n2: number, sChar: string,
     category: '수리',
     title: '이격(利格): 장년/환경운',
     name: lHex.name,
-    description: `수리 ${lee}획. 중년 이후의 안정과 자식 운, 그리고 노후를 향한 다리 역할을 하는 운세입니다. ${lHex.desc}`,
+    description: `수리 ${lee}획. 가정의 화목과 사회적 성취가 안정 궤도에 오르는 결실의 시기입니다. ${lHex.desc}`,
     status: lHex.status as any
   });
 
@@ -121,7 +121,7 @@ export const analyzeFortune = (s: number, n1: number, n2: number, sChar: string,
     category: '수리',
     title: '정격(貞格): 총운/결실운',
     name: jHex.name,
-    description: `수리 ${jung}획. 일생을 관통하는 가장 근본적인 파동이자 말년의 풍요와 명예를 상징하는 절대적 지표입니다. ${jHex.desc}`,
+    description: `수리 ${jung}획. 일생을 관통하는 가장 강력한 파동이자 말년의 평안과 가문의 번창을 결정짓는 핵심 지표입니다. ${jHex.desc}`,
     status: jHex.status as any
   });
 
