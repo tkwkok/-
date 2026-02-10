@@ -63,12 +63,13 @@ const App: React.FC = () => {
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
       const fullName = mode === AnalysisMode.HANGUL ? `${nameInput.s}${nameInput.n1}${nameInput.n2}` : hanjaItems.map(h => h?.h).join('');
       
-      const prompt = `당신은 대한민국 최고의 성명학 권위자입니다. 다음 이름 '${fullName}'에 대해 전문가 수준의 심층 분석 리포트를 작성해 주세요. 
-      포함할 내용:
-      1. 이름이 가진 전체적인 품격과 기운
-      2. 발음오행과 수리의 조화
-      3. 인생의 전반적인 흐름과 주의해야 할 점
-      문체는 매우 격조 있고 정중하게 작성하며, 미래에 대한 긍정적인 제언을 반드시 포함해 주세요.`;
+      const prompt = `당신은 대한민국 최고의 정통 주역 성명학 권위자입니다. 다음 이름 '${fullName}'에 대해 전문가 수준의 심층 분석 리포트를 작성해 주세요. 
+      분석 시 다음 요소를 반드시 심도 있게 다뤄주세요:
+      1. 이름이 가진 전체적인 품격과 영적인 기운 (주역 64괘 기반)
+      2. 발음오행의 상생과 발음음양의 조화가 선사하는 운명적 흐름
+      3. 81수리의 원형이정 4격이 삶의 주기(초년, 중년, 장년, 노년)에 미치는 영향
+      4. 사주 보완을 위해 향후 고려하면 좋은 자원오행 제언
+      문체는 매우 격조 있고 정중하게 작성하며, 사용자가 삶의 희망을 발견할 수 있도록 품위 있는 언어를 사용해 주세요.`;
 
       const response = await ai.models.generateContent({
         model: 'gemini-3-flash-preview',
@@ -97,7 +98,7 @@ const App: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen">
       {/* 고정 헤더 */}
-      <nav className="sticky top-0 z-40 bg-brand-paper/90 backdrop-blur-lg h-16 flex items-center justify-between px-6 border-b border-brand-gold/10">
+      <nav className="sticky top-0 z-40 bg-brand-paper/90 backdrop-blur-lg h-16 flex items-center justify-between px-6 border-b border-brand-gold/10 shadow-sm">
         <button onClick={() => setView('main')} className="flex items-center gap-2">
           <div className="w-8 h-8 bg-brand-red rounded-lg flex items-center justify-center shadow-md">
             <span className="text-white text-sm font-black">明</span>
@@ -105,9 +106,9 @@ const App: React.FC = () => {
           <span className="text-brand-ink text-lg font-black tracking-tighter">명경</span>
         </button>
         <div className="hidden md:flex gap-8">
-          <button onClick={() => setView('main')} className={`text-xs font-black ${view === 'main' ? 'text-brand-red' : 'text-stone-400'}`}>HOME</button>
-          <button onClick={() => setView('guide')} className={`text-xs font-black ${view === 'guide' ? 'text-brand-red' : 'text-stone-400'}`}>GUIDE</button>
-          <button onClick={() => setView('consult')} className={`text-xs font-black ${view === 'consult' ? 'text-brand-red' : 'text-stone-400'}`}>CONSULT</button>
+          <button onClick={() => setView('main')} className={`text-xs font-black transition-colors hover:text-brand-red ${view === 'main' ? 'text-brand-red underline underline-offset-8' : 'text-stone-400'}`}>홈</button>
+          <button onClick={() => setView('guide')} className={`text-xs font-black transition-colors hover:text-brand-red ${view === 'guide' ? 'text-brand-red underline underline-offset-8' : 'text-stone-400'}`}>성명학 원리</button>
+          <button onClick={() => setView('consult')} className={`text-xs font-black transition-colors hover:text-brand-red ${view === 'consult' ? 'text-brand-red underline underline-offset-8' : 'text-stone-400'}`}>VIP 상담</button>
         </div>
       </nav>
 
@@ -126,24 +127,24 @@ const App: React.FC = () => {
             </div>
 
             <main>
-              <div className="premium-oriental-card p-10 mb-20">
+              <div className="premium-oriental-card p-10 mb-20 bg-white">
                 <div className="grid grid-cols-3 gap-2 mb-16 relative">
                   {(mode === AnalysisMode.HANGUL ? ['s', 'n1', 'n2'] : [0, 1, 2]).map((key, idx) => (
                     <div key={idx} className="relative flex flex-col items-center">
-                      <div className="bg-label-text">{idx === 0 ? '姓' : idx === 1 ? '名' : '字'}</div>
+                      <div className="bg-label-text opacity-[0.05] select-none">{idx === 0 ? '姓' : idx === 1 ? '名' : '字'}</div>
                       <div className="w-full relative z-10">
                         {mode === AnalysisMode.HANGUL ? (
                           <input 
                             type="text"
                             value={nameInput[key as 's'|'n1'|'n2']}
                             onChange={(e) => setNameInput(prev => ({ ...prev, [key]: e.target.value.substring(0,1) }))}
-                            className="input-premium"
+                            className="input-premium cursor-text"
                             placeholder="?"
                           />
                         ) : (
                           <button 
                             onClick={() => setCurSlot(idx)}
-                            className="input-premium min-h-[120px] flex items-center justify-center"
+                            className="input-premium min-h-[120px] flex items-center justify-center hover:bg-stone-50 rounded-2xl transition-all"
                           >
                             {hanjaItems[idx] ? hanjaItems[idx]!.h : '?'}
                           </button>
@@ -151,13 +152,13 @@ const App: React.FC = () => {
                         <div className="input-border"></div>
                       </div>
                       <span className="stroke-count-text">
-                        {(mode === AnalysisMode.HANGUL ? getHangulStroke(nameInput[key as 's'|'n1'|'n2']) : hanjaItems[idx]?.s) || 0} Str.
+                        {(mode === AnalysisMode.HANGUL ? getHangulStroke(nameInput[key as 's'|'n1'|'n2']) : hanjaItems[idx]?.s) || 0} 획
                       </span>
                     </div>
                   ))}
                 </div>
 
-                <button onClick={runAnalysis} disabled={isLoading} className="btn-destiny">
+                <button onClick={runAnalysis} disabled={isLoading} className="btn-destiny active:scale-95">
                   {isLoading ? '운명 지도를 그리는 중...' : '운명 리포트 생성'}
                 </button>
               </div>
@@ -166,7 +167,7 @@ const App: React.FC = () => {
                 {isAnalyzed && (
                   <div className="space-y-12 fade-in-up">
                     <div className="bg-white rounded-[2.5rem] p-10 border-t-[10px] border-brand-gold shadow-xl relative">
-                      <div className="absolute top-6 right-8 text-brand-gold opacity-10 font-black text-6xl italic">Rep.</div>
+                      <div className="absolute top-6 right-8 text-brand-gold opacity-10 font-black text-6xl italic select-none">評</div>
                       <h4 className="text-brand-red text-xl font-black mb-6 flex items-center gap-2">
                         <span className="w-1.5 h-6 bg-brand-red rounded-full"></span>
                         AI 전문 성명 감정서
@@ -178,16 +179,20 @@ const App: React.FC = () => {
                     </div>
                     
                     {/* 상담 유도 섹션 고정 */}
-                    <div className="bg-brand-ink text-white rounded-[2.5rem] p-10 shadow-2xl mt-20 relative overflow-hidden">
+                    <div className="bg-brand-ink text-white rounded-[2.5rem] p-10 shadow-2xl mt-20 relative overflow-hidden border border-brand-gold/20">
                       <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-brand-red/10 rounded-full blur-3xl"></div>
                       <span className="text-brand-gold text-[10px] font-black tracking-widest uppercase mb-4 block">1:1 Premium Service</span>
                       <h3 className="text-2xl font-black mb-4 tracking-tighter">당신만을 위한 이름, '명경'이 짓습니다.</h3>
-                      <p className="text-stone-400 text-sm mb-8 leading-relaxed">
-                        단순 수치 분석을 넘어 사주와 조화를 이루는 최고의 이름을 제안합니다.<br/>
-                        <strong className="text-white">발음오행·발음음양·81수리·자원오행·용신분석</strong>을 모두 포함한 프리미엄 상담을 경험하세요.
-                      </p>
-                      <button onClick={() => setView('consult')} className="w-full py-4 bg-brand-gold text-brand-ink font-black rounded-xl text-sm shadow-lg hover:bg-white transition-colors">
-                        작가 상담 예약하기
+                      <div className="space-y-2 mb-8">
+                        <p className="text-stone-400 text-sm leading-relaxed">단순 수치 분석을 넘어 사주와 조화를 이루는 최고의 이름을 제안합니다.</p>
+                        <div className="flex flex-wrap gap-2 pt-2">
+                           {["발음오행", "발음음양", "81수리", "자원오행", "용신분석"].map(tag => (
+                             <span key={tag} className="text-[10px] bg-white/5 border border-white/10 px-2 py-1 rounded-md text-brand-gold font-bold">#{tag}</span>
+                           ))}
+                        </div>
+                      </div>
+                      <button onClick={() => setView('consult')} className="w-full py-4 bg-brand-gold text-brand-ink font-black rounded-xl text-sm shadow-lg hover:bg-white transition-all transform active:scale-95">
+                        프리미엄 상담 예약하기
                       </button>
                     </div>
                   </div>
@@ -204,12 +209,12 @@ const App: React.FC = () => {
               {[
                 {t: "발음오행(發音五行)", d: "이름 소리의 첫 자음이 가진 기운이 서로 상생하는지 상극하는지 분석합니다. 대인관계와 사회적 명망을 결정짓는 핵심 요소입니다."},
                 {t: "발음음양(發音陰陽)", d: "획수의 홀수(양)와 짝수(음)가 적절히 섞여야 조화로운 삶을 삽니다. 지나친 양이나 음은 인생의 굴곡을 만듭니다."},
-                {h: "81수리(81數理)", d: "주역의 원리를 숫자에 대입하여 초년, 중년, 장년, 총운의 길흉을 판별합니다. 성명학의 가장 기본이 되는 분석법입니다."},
-                {h: "자원오행 & 용신(用神)", d: "사주에 부족한 기운을 한자 자체가 가진 오행(자원오행)으로 보강하는 고도의 기법입니다. 프리미엄 작명 상담의 핵심입니다."}
+                {t: "81수리(81數理)", d: "주역의 원리를 숫자에 대입하여 초년, 중년, 장년, 총운의 길흉을 판별합니다. 성명학의 가장 기본이 되는 분석법입니다."},
+                {t: "자원오행 & 용신(用神)", d: "사주에 부족한 기운을 한자 자체가 가진 오행(자원오행)으로 보강하는 고도의 기법입니다. 프리미엄 작명 상담의 핵심입니다."}
               ].map((item, i) => (
-                <div key={i} className="premium-oriental-card p-10">
-                  <h4 className="text-lg font-black text-brand-red mb-4">{item.t || item.h}</h4>
-                  <p className="text-stone-600 text-sm leading-relaxed">{item.d}</p>
+                <div key={i} className="premium-oriental-card p-10 bg-white shadow-md">
+                  <h4 className="text-lg font-black text-brand-red mb-4">{item.t}</h4>
+                  <p className="text-stone-600 text-sm leading-relaxed font-medium">{item.d}</p>
                 </div>
               ))}
             </div>
@@ -221,75 +226,89 @@ const App: React.FC = () => {
              <header className="mb-12">
                <span className="text-brand-gold font-black text-[10px] tracking-widest uppercase mb-2 block">Premium Consultation</span>
                <h2 className="text-4xl font-black text-brand-ink tracking-tighter">1:1 프리미엄 작명 상담</h2>
-               <p className="text-stone-500 text-sm mt-4 leading-relaxed">
-                 AI가 읽지 못하는 삶의 맥락까지 고려하여,<br/>
-                 평생 당신을 지켜줄 귀한 이름을 선사합니다.
+               <p className="text-stone-500 text-sm mt-4 leading-relaxed font-medium italic">
+                 "이름은 불려질 때마다 생기는 운명의 파동입니다."<br/>
+                 평생 당신을 지켜줄 귀한 이름을 정통 원리로 선사합니다.
                </p>
              </header>
 
-             <div className="bg-stone-50 rounded-3xl p-8 mb-10 border border-stone-100">
-               <h4 className="font-black text-brand-red mb-6 text-sm underline underline-offset-4">제공 서비스 내역</h4>
+             <div className="bg-brand-paper rounded-3xl p-8 mb-10 border border-brand-gold/20 shadow-inner">
+               <h4 className="font-black text-brand-red mb-6 text-sm underline underline-offset-4 decoration-brand-gold">VIP 제공 서비스 내역</h4>
                <ul className="space-y-4 text-xs font-bold text-stone-700">
-                 <li className="flex items-center gap-2">✓ 정통 발음오행 및 발음음양 심층 분석</li>
-                 <li className="flex items-center gap-2">✓ 81수리 원형이정(元亨利貞) 4격 완성</li>
-                 <li className="flex items-center gap-2">✓ 사주 보완을 위한 자원오행(字源五行) 적용</li>
-                 <li className="flex items-center gap-2">✓ 억부/조후 기반 정밀 용신(用神) 분석</li>
-                 <li className="flex items-center gap-2">✓ 주역 64괘 기반 길흉 판단 리포트</li>
+                 <li className="flex items-center gap-3">
+                   <span className="text-brand-gold text-lg">✦</span> 
+                   <span>정통 <span className="text-brand-red">발음오행</span> 및 <span className="text-brand-red">발음음양</span> 심층 조화 분석</span>
+                 </li>
+                 <li className="flex items-center gap-3">
+                   <span className="text-brand-gold text-lg">✦</span> 
+                   <span><span className="text-brand-red">81수리</span> 원형이정(元亨利貞) 4격 완성 시스템 적용</span>
+                 </li>
+                 <li className="flex items-center gap-3">
+                   <span className="text-brand-gold text-lg">✦</span> 
+                   <span>부족한 기운을 채우는 정밀 <span className="text-brand-red">자원오행(字源五行)</span> 배치</span>
+                 </li>
+                 <li className="flex items-center gap-3">
+                   <span className="text-brand-gold text-lg">✦</span> 
+                   <span>억부/조후 기반 개인 맞춤형 <span className="text-brand-red">용신(用神)</span> 정밀 판별</span>
+                 </li>
+                 <li className="flex items-center gap-3">
+                   <span className="text-brand-gold text-lg">✦</span> 
+                   <span>주역 64괘 기반 총운 리포트 및 작명 인증서 발송</span>
+                 </li>
                </ul>
              </div>
 
              <form action="https://formspree.io/f/xpqjwjjw" method="POST" className="space-y-4">
                <div className="grid grid-cols-2 gap-4">
-                 <input name="name" required placeholder="성함" className="p-4 bg-white rounded-xl border border-stone-200 outline-none focus:ring-2 focus:ring-brand-red/20 font-bold text-sm" />
-                 <input name="phone" required placeholder="연락처" className="p-4 bg-white rounded-xl border border-stone-200 outline-none focus:ring-2 focus:ring-brand-red/20 font-bold text-sm" />
+                 <input name="name" required placeholder="상담자 성함" className="p-4 bg-white rounded-xl border border-stone-200 outline-none focus:ring-2 focus:ring-brand-red/20 font-bold text-sm shadow-sm" />
+                 <input name="phone" required placeholder="휴대폰 번호" className="p-4 bg-white rounded-xl border border-stone-200 outline-none focus:ring-2 focus:ring-brand-red/20 font-bold text-sm shadow-sm" />
                </div>
-               <textarea name="memo" rows={4} placeholder="고민 내용 (선택사항)" className="w-full p-4 bg-white rounded-xl border border-stone-200 outline-none focus:ring-2 focus:ring-brand-red/20 font-bold text-sm resize-none"></textarea>
+               <textarea name="memo" rows={4} placeholder="생년월일 및 태어난 시간, 고민 내용을 적어주세요." className="w-full p-4 bg-white rounded-xl border border-stone-200 outline-none focus:ring-2 focus:ring-brand-red/20 font-bold text-sm resize-none shadow-sm"></textarea>
                <button type="submit" className="w-full py-5 bg-brand-red text-white font-black rounded-xl text-base shadow-xl hover:scale-[1.02] active:scale-95 transition-all">
-                 프리미엄 상담 신청하기
+                 프리미엄 상담 예약하기
                </button>
              </form>
           </div>
         )}
 
-        {/* 하단 정보 섹션 (애드센스 신뢰성 확보) */}
-        <footer className="mt-40 border-t border-stone-200 pt-16 pb-10 text-center">
-          <div className="flex justify-center gap-4 mb-8">
-            <div className="w-6 h-6 bg-stone-200 rounded-md"></div>
-            <div className="w-6 h-6 bg-stone-200 rounded-md"></div>
-            <div className="w-6 h-6 bg-stone-200 rounded-md"></div>
+        {/* 하단 정보 섹션 (애드센스 신뢰성 확보 필수 요소) */}
+        <footer className="mt-40 border-t border-stone-200 pt-16 pb-12 text-center bg-white/50">
+          <div className="flex justify-center gap-8 text-[9px] font-black text-stone-400 tracking-widest uppercase mb-10">
+            <button className="hover:text-brand-red transition-colors">이용약관</button>
+            <button className="hover:text-brand-red transition-colors">개인정보처리방침</button>
+            <button className="hover:text-brand-red transition-colors">고객센터</button>
           </div>
-          <div className="flex justify-center gap-8 text-[9px] font-black text-stone-400 tracking-widest uppercase mb-8">
-            <button className="hover:text-brand-red transition-colors">Terms of Service</button>
-            <button className="hover:text-brand-red transition-colors">Privacy Policy</button>
-            <button className="hover:text-brand-red transition-colors">Customer Center</button>
-          </div>
-          <p className="text-[9px] text-stone-300 font-medium leading-loose">
+          <p className="text-[10px] text-stone-400 font-bold leading-loose max-w-xs mx-auto">
             © 2024 MYEONGGYEONG PROJECT. ALL RIGHTS RESERVED.<br/>
             본 서비스는 정통 성명학 원리를 기반으로 한 AI 분석 리포트입니다.<br/>
-            전문가 상담은 별도의 예약 절차를 통해 진행됩니다.
+            모든 분석 결과는 성명학적 가이드라인이며, 중요한 결정은 반드시 전문가 상담을 권장합니다.
           </p>
+          <div className="mt-8 flex justify-center gap-2 opacity-20">
+             <div className="w-8 h-1 bg-stone-300 rounded-full"></div>
+             <div className="w-4 h-1 bg-stone-300 rounded-full"></div>
+          </div>
         </footer>
       </div>
 
-      {/* 모바일 하단 탭 바 (앱 느낌) */}
-      <div className="mobile-nav md:hidden">
-        <button onClick={() => setView('main')} className={`flex flex-col items-center gap-1 ${view === 'main' ? 'text-brand-red' : 'text-stone-300'}`}>
-          <div className="text-xl">🏠</div>
-          <span className="text-[9px] font-black">HOME</span>
+      {/* 모바일 하단 탭 바 (앱 경험 극대화) */}
+      <div className="mobile-nav md:hidden border-t border-stone-100 shadow-[0_-5px_15px_-5px_rgba(0,0,0,0.05)] bg-white/95">
+        <button onClick={() => setView('main')} className={`flex flex-col items-center gap-1 transition-all ${view === 'main' ? 'text-brand-red scale-110' : 'text-stone-300'}`}>
+          <div className="text-xl">{view === 'main' ? '⛩️' : '🏠'}</div>
+          <span className="text-[9px] font-black uppercase tracking-tighter">홈</span>
         </button>
-        <button onClick={() => setView('guide')} className={`flex flex-col items-center gap-1 ${view === 'guide' ? 'text-brand-red' : 'text-stone-300'}`}>
-          <div className="text-xl">📖</div>
-          <span className="text-[9px] font-black">GUIDE</span>
+        <button onClick={() => setView('guide')} className={`flex flex-col items-center gap-1 transition-all ${view === 'guide' ? 'text-brand-red scale-110' : 'text-stone-300'}`}>
+          <div className="text-xl">📜</div>
+          <span className="text-[9px] font-black uppercase tracking-tighter">원리</span>
         </button>
-        <button onClick={() => setView('consult')} className={`flex flex-col items-center gap-1 ${view === 'consult' ? 'text-brand-red' : 'text-stone-300'}`}>
-          <div className="text-xl">✨</div>
-          <span className="text-[9px] font-black">CONSULT</span>
+        <button onClick={() => setView('consult')} className={`flex flex-col items-center gap-1 transition-all ${view === 'consult' ? 'text-brand-red scale-110' : 'text-stone-300'}`}>
+          <div className="text-xl">💎</div>
+          <span className="text-[9px] font-black uppercase tracking-tighter">상담</span>
         </button>
       </div>
 
       {curSlot !== null && (
         <HanjaSelector 
-          title={curSlot === 0 ? "성씨" : `이름${curSlot}`} 
+          title={curSlot === 0 ? "성씨" : `이름 ${curSlot === 1 ? '첫' : '끝'}자`} 
           onSelect={(i) => { 
             const n = [...hanjaItems]; 
             n[curSlot] = i; 
