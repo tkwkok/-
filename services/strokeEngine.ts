@@ -46,10 +46,11 @@ export const getHangulStroke = (char: string): number => {
 };
 
 export const analyzeFortune = (s: number, n1: number, n2: number, sChar: string, n1Char: string, n2Char: string): FortuneResult[] => {
-  const won = n1 + n2;   // 원격(초년)
-  const hyung = s + n1;  // 형격(중년)
-  const lee = s + n2;    // 이격(장년)
-  const jung = s + n1 + n2; // 정격(총운)
+  // 81수리 원형이정(元亨利貞) 정통 산출식 (Excel Logic 기반)
+  const won = n1 + n2;   // 원격(초년운): 이름 상+하
+  const hyung = s + n1;  // 형격(중년운): 성 + 이름 상
+  const lee = s + n2;    // 이격(장년운): 성 + 이름 하
+  const jung = s + n1 + n2; // 정격(말년/총운): 성 + 이름 상 + 이름 하
 
   const results: FortuneResult[] = [];
 
@@ -61,7 +62,7 @@ export const analyzeFortune = (s: number, n1: number, n2: number, sChar: string,
     category: '오행',
     title: '발음오행(發音五行)',
     name: `${e1}-${e2}-${e3}`,
-    description: `성명의 초성이 ${e1}, ${e2}, ${e3}의 기운을 담고 있습니다. 이는 소리의 울림을 통해 운명의 흐름을 조절하는 중요한 지표입니다. 상생의 흐름일 경우 대인관계가 원만하고 사회적 성공이 빠릅니다.`,
+    description: `성명의 초성이 ${e1}, ${e2}, ${e3}의 기운을 담고 있습니다. 소리의 파동이 상생하면 사회적 성공이 빠르고 상극하면 고난이 따릅니다.`,
     status: 'neutral',
     tags: [e1, e2, e3]
   });
@@ -76,21 +77,24 @@ export const analyzeFortune = (s: number, n1: number, n2: number, sChar: string,
     title: '음양조화(陰陽調和)',
     name: `${y1}-${y2}-${y3}`,
     description: isBalanced 
-      ? "음과 양이 적절히 섞여 우주의 질서와 조화를 이루고 있습니다. 성격이 원만하며 인생의 굴곡이 적고 평탄한 운세입니다." 
-      : "음양의 균형이 한쪽으로 치우쳐 있습니다. 기운이 너무 강하거나 약할 수 있으니 생활 환경에서 부족한 기운을 채우는 지혜가 필요합니다.",
+      ? "음과 양이 조화롭게 섞여 있어 인생이 평탄하고 성품이 원만합니다." 
+      : "음양의 균형이 한쪽으로 치우쳐 삶의 굴곡이 생길 수 있습니다.",
     status: isBalanced ? 'good' : 'bad'
   });
 
-  // 3. 81수리 분석
-  const wonHex = HEXAGRAM_DB[`${getMod8(n1)}${getMod8(n2)}`] || { name: '초년운', desc: '기초를 다지는 시기입니다.', status: 'neutral' };
-  const hyungHex = HEXAGRAM_DB[`${getMod8(s)}${getMod8(n1)}`] || { name: '중년운', desc: '평탄한 시기입니다.', status: 'neutral' };
-  const jungHex = HEXAGRAM_DB[`${getMod8(s+n1)}${getMod8(s+n1+n2)}`] || { name: '평생 총운', desc: '하늘의 뜻을 따르십시오.', status: 'neutral' };
+  // 3. 81수리 분석 (형격과 정격 중심)
+  // 주역 64괘 도출을 위해 상괘(성+명상)와 하괘(성+명상+명하)의 모듈러 8 적용
+  const hyungKey = `${getMod8(hyung)}${getMod8(jung)}`;
+  const hyungHex = HEXAGRAM_DB[hyungKey] || { name: '중년의 기상', desc: '내실을 기하면 대성합니다.', status: 'neutral' };
+  
+  const jungKey = `${getMod8(jung)}${getMod8(won)}`;
+  const jungHex = HEXAGRAM_DB[jungKey] || { name: '평생 총운', desc: '근본을 지키면 하늘이 돕습니다.', status: 'neutral' };
 
   results.push({
     category: '수리',
-    title: '81수리: 형격(중년)',
+    title: '81수리: 형격(중년운)',
     name: hyungHex.name,
-    description: hyungHex.desc,
+    description: `수리 ${hyung}획: ${hyungHex.desc}`,
     status: hyungHex.status as any
   });
 
@@ -98,7 +102,7 @@ export const analyzeFortune = (s: number, n1: number, n2: number, sChar: string,
     category: '수리',
     title: '81수리: 정격(총운)',
     name: jungHex.name,
-    description: jungHex.desc,
+    description: `수리 ${jung}획: ${jungHex.desc}`,
     status: jungHex.status as any
   });
 
