@@ -4,16 +4,47 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>명경(明鏡) | 정통 주역 성명학 심층 분석</title>
-  <meta name="description" content="이름의 이치를 거울처럼 비추는 정통 주역 성명학 분석 서비스 명경.">
+  <title>명경(明鏡) | 프리미엄 정통 주역 성명학 리포트</title>
+  <meta name="description" content="AI 기반 정통 주역 성명학 분석 서비스. 발음오행, 81수리, 음양조화를 통해 이름의 운명을 거울처럼 비춥니다. 전문 작명가의 1:1 심층 상담 가능.">
+  <meta name="keywords" content="성명학, 이름풀이, 작명, 주역, 사주, 무료이름풀이, 명경, 개명, 작명소">
+  <link rel="canonical" href="https://myeonggyeong.com">
   
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-title" content="명경">
-  <meta name="theme-color" content="#fdfaf5">
-  
+  <!-- 폰트 로드 -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              red: '#4a1c22',
+              gold: '#c5a059',
+              paper: '#fdfaf5',
+              ink: '#1c1917'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  
+  <style>
+    body {
+      font-family: 'Noto Serif KR', serif;
+      background-color: #fdfaf5;
+      margin: 0;
+      color: #1c1917;
+    }
+    ::selection {
+      background: #4a1c22;
+      color: white;
+    }
+  </style>
 <script type="importmap">
 {
   "imports": {
@@ -27,7 +58,7 @@
 }
 </script>
 </head>
-<body class="min-h-screen bg-[#fdfaf5]">
+<body class="min-h-screen bg-brand-paper">
   <div id="root"></div>
   <script type="module" src="/index.tsx"></script>
 </body>

@@ -6,7 +6,7 @@ interface Props {
 }
 
 const AdInterstitial: React.FC<Props> = ({ onClose }) => {
-  const [seconds, setSeconds] = useState(3);
+  const [seconds, setSeconds] = useState(5);
 
   useEffect(() => {
     if (seconds > 0) {
@@ -16,35 +16,38 @@ const AdInterstitial: React.FC<Props> = ({ onClose }) => {
   }, [seconds]);
 
   return (
-    <div className="fixed inset-0 z-[100] bg-black/80 flex flex-col items-center justify-center p-6 backdrop-blur-sm">
-      <div className="w-full max-w-xs bg-white rounded-[32px] overflow-hidden shadow-2xl flex flex-col items-center border border-white/10">
-        <div className="w-full bg-stone-50 py-3 px-6 flex justify-between items-center border-b border-stone-100">
-          <span className="text-[10px] font-bold text-stone-400">안내 말씀</span>
+    <div className="fixed inset-0 z-[100] bg-brand-ink/95 flex flex-col items-center justify-center p-6 backdrop-blur-xl">
+      <div className="w-full max-w-sm bg-brand-paper rounded-[3rem] overflow-hidden shadow-2xl flex flex-col items-center border border-brand-gold/20">
+        <div className="w-full bg-white py-4 px-8 flex justify-between items-center border-b border-stone-100">
+          <span className="text-[10px] font-black text-stone-400 tracking-widest uppercase">Sponsored Guidance</span>
           {seconds > 0 ? (
-            <span className="text-[10px] font-bold text-[#8b2e2e]">{seconds}초 후 닫기</span>
+            <span className="text-[10px] font-black text-brand-red">{seconds}S</span>
           ) : (
-            <button onClick={onClose} className="text-[#8b2e2e] font-black text-xs flex items-center gap-1">닫기</button>
+            <button onClick={onClose} className="text-brand-red font-black text-xs">CLOSE</button>
           )}
         </div>
 
-        <div className="w-full aspect-square bg-white flex flex-col items-center justify-center p-8">
-          <div className="text-center space-y-4">
-            <div className="w-12 h-12 bg-stone-50 rounded-2xl mx-auto flex items-center justify-center">
-              <span className="text-[#c5a059] text-xl font-black">明</span>
+        <div className="w-full aspect-square bg-white flex flex-col items-center justify-center p-12">
+          <div className="text-center space-y-6">
+            <div className="w-16 h-16 bg-brand-red rounded-[1.5rem] mx-auto flex items-center justify-center shadow-xl rotate-3">
+              <span className="text-white text-2xl font-black">明</span>
             </div>
-            <p className="text-stone-500 text-xs leading-relaxed">
-              무료 서비스 운영을 위해<br/>후원 광고가 송출 중입니다.
-            </p>
+            <div className="space-y-2">
+              <h3 className="text-xl font-black text-brand-ink tracking-tighter">품격 있는 분석을 위해</h3>
+              <p className="text-stone-400 text-sm leading-relaxed font-medium">
+                명경의 무료 분석 서비스 유지를 위해<br/>잠시 후 광고가 송출됩니다.
+              </p>
+            </div>
           </div>
         </div>
 
-        <div className="w-full p-6">
+        <div className="w-full p-8 bg-stone-50">
           <button 
             disabled={seconds > 0}
             onClick={onClose}
-            className={`w-full py-4 rounded-xl font-bold text-sm transition-all ${seconds > 0 ? 'bg-stone-50 text-stone-300' : 'bg-[#8b2e2e] text-white'}`}
+            className={`w-full py-5 rounded-2xl font-black text-base transition-all ${seconds > 0 ? 'bg-stone-200 text-stone-400' : 'bg-brand-red text-white shadow-xl hover:scale-105 active:scale-95'}`}
           >
-            결과 확인하기
+            {seconds > 0 ? `잠시만 기다려주세요` : '결과 확인하기'}
           </button>
         </div>
       </div>

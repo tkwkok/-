@@ -21,7 +21,14 @@ const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showAd, setShowAd] = useState(false);
 
-  // 404 에러 방지 및 디자인 깨짐 방지를 위한 초기화
+  // 5회당 1회 광고 로직
+  const getAnalysisCount = () => parseInt(localStorage.getItem('myeonggyeong_count') || '0');
+  const incrementCount = () => {
+    const nextCount = getAnalysisCount() + 1;
+    localStorage.setItem('myeonggyeong_count', nextCount.toString());
+    return nextCount;
+  };
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [view]);
@@ -43,7 +50,12 @@ const App: React.FC = () => {
     }
 
     setIsLoading(true);
-    setShowAd(true); // 분석 전 광고 노출 시뮬레이션
+    
+    // 5번째 분석마다 광고 호출
+    const currentCount = incrementCount();
+    if (currentCount % 5 === 0) {
+      setShowAd(true);
+    }
 
     const baseResults = analyzeFortune(sStrokes, n1Strokes, n2Strokes, sChar, n1Char, n2Char);
     setResults(baseResults);
@@ -51,191 +63,172 @@ const App: React.FC = () => {
     try {
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
       const fullName = mode === AnalysisMode.HANGUL ? `${nameInput.s}${nameInput.n1}${nameInput.n2}` : hanjaItems.map(h => h?.h).join('');
-      const prompt = `성명학 전문가로서 다음 이름의 '자원오행'과 '용신분석'을 심층 분석해주세요. 
-      이름: ${fullName} (${mode === AnalysisMode.HANGUL ? '한글' : '한자'})
-      답변은 정중한 한국어로, 400자 내외의 리포트를 작성하세요. '자원오행'과 '용신' 키워드를 반드시 포함하고 조화로운 삶을 위한 조언을 덧붙이세요.`;
+      const prompt = `성명학 전문가로서 이름 '${fullName}'에 대해 발음오행, 발음음양, 81수리를 바탕으로 품격 있고 정중하게 분석해 주세요. 특히 이 이름이 가진 미래의 가능성과 주의할 점을 심층적으로 다뤄주세요.`;
 
       const response = await ai.models.generateContent({
         model: 'gemini-3-flash-preview',
         contents: prompt
       });
-      setAiAnalysis(response.text || "분석 리포트를 불러오는 중입니다.");
+      setAiAnalysis(response.text || "분석 완료되었습니다.");
     } catch (e) {
-      setAiAnalysis("현재 심층 분석 서버가 혼잡하여 수리 분석 결과부터 보여드립니다.");
+      setAiAnalysis("현재 데이터 분석량이 많습니다. 기본 분석 결과를 참고해 주십시오.");
     }
-
+    
+    if (currentCount % 5 !== 0) {
+      setIsAnalyzed(true);
+      setTimeout(() => document.getElementById('result-section')?.scrollIntoView({ behavior: 'smooth' }), 300);
+    }
     setIsLoading(false);
   };
 
   const handleCloseAd = () => {
     setShowAd(false);
     setIsAnalyzed(true);
-    setTimeout(() => document.getElementById('result-section')?.scrollIntoView({ behavior: 'smooth' }), 300);
+    setTimeout(() => {
+      document.getElementById('result-section')?.scrollIntoView({ behavior: 'smooth' });
+    }, 300);
   };
 
   return (
     <div className="flex flex-col min-h-screen">
-      {/* 상단 네비게이션 */}
-      <nav className="sticky top-0 z-50 bg-white/90 backdrop-blur-2xl border-b border-[#c5a059]/20 h-20 flex items-center">
-        <div className="max-w-md mx-auto w-full px-6 flex justify-between items-center">
-          <button onClick={() => setView('main')} className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-[#8b2e2e] rounded-xl flex items-center justify-center text-white font-black text-xl shadow-lg">明</div>
-            <span className="text-2xl font-black text-stone-900 tracking-tighter">명경</span>
+      {/* Header/Nav */}
+      <nav className="sticky top-0 z-40 bg-brand-paper/80 backdrop-blur-md h-20 flex items-center border-b border-brand-gold/10">
+        <div className="max-w-md mx-auto w-full flex justify-between items-center px-6">
+          <button onClick={() => setView('main')} className="group flex items-center gap-2">
+            <div className="w-10 h-10 bg-brand-red rounded-xl flex items-center justify-center shadow-lg group-hover:rotate-12 transition-transform">
+              <span className="text-white text-xl font-black">明</span>
+            </div>
+            <span className="text-brand-ink text-2xl font-black tracking-tighter">명경</span>
           </button>
           <div className="flex gap-6">
-            <button onClick={() => setView('main')} className={`text-xs font-black ${view === 'main' ? 'text-[#8b2e2e]' : 'text-stone-400'}`}>운세분석</button>
-            <button onClick={() => setView('guide')} className={`text-xs font-black ${view === 'guide' ? 'text-[#8b2e2e]' : 'text-stone-400'}`}>성명학 원칙</button>
+            <button onClick={() => setView('main')} className={`text-sm font-black ${view === 'main' ? 'text-brand-red' : 'text-stone-400'}`}>HOME</button>
+            <button onClick={() => setView('guide')} className={`text-sm font-black ${view === 'guide' ? 'text-brand-red' : 'text-stone-400'}`}>GUIDE</button>
           </div>
         </div>
       </nav>
 
-      <div className="max-w-md mx-auto flex-1 w-full pb-32 pt-16 px-6">
+      <div className="max-w-md mx-auto flex-1 w-full pb-32 pt-12 px-6">
         {view === 'main' ? (
           <div className="fade-in-up">
-            <header className="text-center mb-20">
-              <div className="inline-block px-4 py-1.5 border-y border-[#c5a059] mb-8">
-                <span className="text-[10px] text-[#c5a059] font-black tracking-[0.6em] uppercase">Professional Naming</span>
-              </div>
-              <h1 className="text-9xl font-black text-stone-900 tracking-tighter mb-4">明鏡</h1>
-              <p className="text-stone-400 text-lg font-medium italic">이름의 이치를 거울처럼 비추다</p>
+            <header className="text-center mb-16">
+              <span className="text-[10px] text-brand-gold font-black tracking-[0.5em] uppercase mb-4 block">PREMIUM NAME ANALYSIS</span>
+              <h1 className="text-7xl font-black text-brand-ink leading-tight mb-4">명경<span className="text-brand-red">.</span></h1>
+              <p className="text-stone-500 text-base font-medium leading-relaxed italic">이름의 이치를 거울처럼 비추어<br/>삶의 길을 밝히는 최고의 지혜</p>
             </header>
 
-            {/* 탭 전환 */}
-            <div className="flex p-1.5 bg-stone-100 rounded-[2.5rem] mb-16 shadow-inner">
-              <button onClick={() => setMode(AnalysisMode.HANGUL)} className={`flex-1 py-4 text-xs font-black rounded-[2rem] transition-all ${mode === AnalysisMode.HANGUL ? 'bg-white text-[#8b2e2e] shadow-md' : 'text-stone-400'}`}>한글 이름 분석</button>
-              <button onClick={() => setMode(AnalysisMode.HANJA)} className={`flex-1 py-4 text-xs font-black rounded-[2rem] transition-all ${mode === AnalysisMode.HANJA ? 'bg-white text-[#8b2e2e] shadow-md' : 'text-stone-400'}`}>한자 이름 분석</button>
+            <div className="flex bg-stone-100 p-1.5 rounded-[2.5rem] mb-12">
+              <button onClick={() => setMode(AnalysisMode.HANGUL)} className={`flex-1 py-4 rounded-[2.2rem] text-sm font-black transition-all ${mode === AnalysisMode.HANGUL ? 'bg-white text-brand-red shadow-lg' : 'text-stone-500'}`}>한글 분석</button>
+              <button onClick={() => setMode(AnalysisMode.HANJA)} className={`flex-1 py-4 rounded-[2.2rem] text-sm font-black transition-all ${mode === AnalysisMode.HANJA ? 'bg-white text-brand-red shadow-lg' : 'text-stone-500'}`}>한자 분석</button>
             </div>
 
             <main>
-              <div className="oriental-card p-10 mb-20 relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-2 h-full bg-[#8b2e2e]"></div>
-                
-                {mode === AnalysisMode.HANGUL ? (
-                  <div className="grid grid-cols-3 gap-8 mb-16">
-                    {(['s', 'n1', 'n2'] as const).map((key, idx) => (
-                      <div key={key} className="flex flex-col items-center">
-                        <label className="text-[11px] text-stone-300 font-bold mb-4">{key === 's' ? '姓 (성)' : `名 (명${idx})`}</label>
-                        <input 
-                          type="text" value={nameInput[key]}
-                          onChange={(e) => setNameInput(prev => ({ ...prev, [key]: e.target.value.substring(0, 1) }))}
-                          className="input-field w-full"
-                          placeholder="?"
-                        />
-                        <span className="text-[11px] mt-4 text-[#c5a059] font-black tracking-widest">{getHangulStroke(nameInput[key]) || 0} 劃</span>
+              <div className="premium-oriental-card p-10 mb-24">
+                <div className="grid grid-cols-3 gap-2 mb-20 relative">
+                  {(mode === AnalysisMode.HANGUL ? ['s', 'n1', 'n2'] : [0, 1, 2]).map((key, idx) => (
+                    <div key={idx} className="relative flex flex-col items-center">
+                      <div className="bg-label-text">{idx === 0 ? '姓' : idx === 1 ? '名' : '字'}</div>
+                      <div className="w-full relative z-10">
+                        {mode === AnalysisMode.HANGUL ? (
+                          <input 
+                            type="text"
+                            value={nameInput[key as 's'|'n1'|'n2']}
+                            onChange={(e) => setNameInput(prev => ({ ...prev, [key]: e.target.value.substring(0,1) }))}
+                            className="input-premium"
+                            placeholder="?"
+                          />
+                        ) : (
+                          <button 
+                            onClick={() => setCurSlot(idx)}
+                            className="input-premium min-h-[140px] flex items-center justify-center"
+                          >
+                            {hanjaItems[idx] ? hanjaItems[idx]!.h : '?'}
+                          </button>
+                        )}
+                        <div className="input-border"></div>
                       </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-3 gap-8 mb-16">
-                    {hanjaItems.map((item, idx) => (
-                      <div key={idx} className="flex flex-col items-center">
-                        <label className="text-[11px] text-stone-300 font-bold mb-4">{idx === 0 ? '姓 (성)' : `名 (명${idx})`}</label>
-                        <button 
-                          onClick={() => setCurSlot(idx)}
-                          className={`w-full aspect-[4/5] flex flex-col items-center justify-center border-2 border-dashed rounded-[2rem] transition-all ${item ? 'border-[#8b2e2e] bg-[#8b2e2e]/5 shadow-inner' : 'border-stone-200 hover:border-[#c5a059]'}`}
-                        >
-                          <span className={`text-6xl font-black ${item ? 'text-[#8b2e2e]' : 'text-stone-200'}`}>{item ? item.h : '選'}</span>
-                          {item && <span className="text-xs mt-3 text-stone-500 font-bold">{item.k}</span>}
-                        </button>
-                        <span className="text-[11px] mt-4 text-[#c5a059] font-black tracking-widest">{item?.s || 0} 劃</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-                <button 
-                  onClick={runAnalysis} 
-                  disabled={isLoading}
-                  className="premium-btn w-full py-7 font-black text-2xl shadow-2xl"
-                >
-                  {isLoading ? '운명을 해독 중입니다...' : '심층 분석 시작'}
+                      <span className="stroke-count-text">
+                        {(mode === AnalysisMode.HANGUL ? getHangulStroke(nameInput[key as 's'|'n1'|'n2']) : hanjaItems[idx]?.s) || 0} STRK
+                      </span>
+                    </div>
+                  ))}
+                </div>
+
+                <button onClick={runAnalysis} disabled={isLoading} className="btn-destiny">
+                  {isLoading ? '분석 운행 중...' : '운명 리포트 생성'}
                 </button>
               </div>
 
-              {/* 결과 리포트 섹션 */}
               <div id="result-section">
                 {isAnalyzed && (
                   <div className="space-y-16 fade-in-up">
-                    <div className="text-center">
-                      <div className="h-px bg-gradient-to-r from-transparent via-[#c5a059] to-transparent mb-10"></div>
-                      <h3 className="text-stone-900 font-black text-3xl tracking-tight">성명 감명 결과 보고서</h3>
-                    </div>
-
-                    <div className="oriental-card p-10 border-l-[10px] border-[#c5a059] bg-[#fdfaf5] shadow-2xl">
-                      <h4 className="text-[#8b2e2e] text-2xl font-black mb-8 flex items-center gap-4">
-                        <span className="w-12 h-px bg-[#8b2e2e]"></span>
-                        자원오행 및 용신 심층 분석
+                    <div className="bg-white rounded-[3rem] p-12 border-t-[12px] border-brand-gold shadow-2xl relative">
+                      <div className="absolute top-8 right-8 text-brand-gold opacity-10 font-black text-6xl">評</div>
+                      <h4 className="text-brand-red text-2xl font-black mb-8 flex items-center gap-3">
+                        AI 성명 감정서
                       </h4>
-                      <div className="text-[16px] text-stone-700 leading-[2.2] font-medium whitespace-pre-wrap">
-                        {aiAnalysis}
-                      </div>
+                      <p className="text-stone-700 leading-loose text-lg font-medium whitespace-pre-wrap">{aiAnalysis}</p>
                     </div>
-
-                    <div className="grid gap-12">
+                    <div className="grid gap-10">
                       {results.map((res, i) => <LuckCard key={i} fortune={res} />)}
                     </div>
                   </div>
                 )}
               </div>
 
-              {/* 하단 상담 섹션 */}
-              <section className="mt-48 p-14 bg-[#1a1a1a] rounded-[4rem] text-white shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] relative overflow-hidden">
-                <div className="absolute -right-20 -top-20 w-96 h-96 bg-[#c5a059]/10 rounded-full blur-[120px]"></div>
-                <div className="relative z-10">
-                  <span className="text-[11px] text-[#c5a059] font-black tracking-[0.7em] uppercase mb-8 block">Exclusive Service</span>
-                  <h2 className="text-5xl font-black mb-10 tracking-tighter">1:1 프리미엄 작명 상담</h2>
-                  <p className="text-stone-400 text-base leading-[2.3] mb-14 font-medium">
-                    단순한 이름 짓기를 넘어, 주역의 64괘와 사주 명리학의 <strong>용신(用神)</strong>을 완벽히 분석하여 평생의 복이 깃든 최고의 성명을 선사합니다.
-                  </p>
-                  
-                  <form action="https://formspree.io/f/xpqjwjjw" method="POST" className="space-y-8">
-                    <input 
-                      type="text" name="name" required placeholder="신청자 성함"
-                      className="w-full p-7 bg-white/5 rounded-3xl border border-white/10 focus:border-[#c5a059] outline-none text-lg transition-all"
-                    />
-                    <input 
-                      type="tel" name="contact" required placeholder="연락처 (010-0000-0000)"
-                      className="w-full p-7 bg-white/5 rounded-3xl border border-white/10 focus:border-[#c5a059] outline-none text-lg transition-all"
-                    />
-                    <button type="submit" className="w-full py-8 bg-[#c5a059] text-stone-900 font-black text-2xl rounded-3xl hover:brightness-110 shadow-3xl shadow-[#c5a059]/20 transition-all">
-                      심층 상담 신청하기
-                    </button>
-                  </form>
+              {/* Consultation Section - 고도화 */}
+              <section className="mt-48 text-center px-4 bg-white rounded-[4rem] p-16 shadow-inner border border-stone-100">
+                <span className="text-brand-gold font-black text-xs tracking-widest mb-4 block uppercase">Exclusive Consultation</span>
+                <h2 className="text-5xl font-black text-brand-ink mb-6 tracking-tighter">프리미엄 작명 상담</h2>
+                <div className="space-y-2 mb-12 text-stone-500 text-base font-medium leading-relaxed">
+                  <p className="flex items-center justify-center gap-2">✓ <span className="text-stone-900 font-bold">발음오행/음양</span> 심층 분석</p>
+                  <p className="flex items-center justify-center gap-2">✓ <span className="text-stone-900 font-bold">81수리/자원오행</span> 맞춤 적용</p>
+                  <p className="flex items-center justify-center gap-2">✓ <span className="text-stone-900 font-bold">용신분석</span> 기반 사주 보완</p>
+                  <p className="mt-4 italic">"평생 불릴 귀한 이름을 선사합니다."</p>
                 </div>
+                
+                <form action="https://formspree.io/f/xpqjwjjw" method="POST" className="space-y-4 max-w-[340px] mx-auto">
+                  <input name="name" required placeholder="성함" className="w-full p-6 bg-stone-50 rounded-2xl border-none outline-none focus:ring-2 focus:ring-brand-red/20 transition-all font-bold" />
+                  <input name="contact" required placeholder="연락처" className="w-full p-6 bg-stone-50 rounded-2xl border-none outline-none focus:ring-2 focus:ring-brand-red/20 transition-all font-bold" />
+                  <textarea name="message" rows={3} placeholder="고민 내용 (선택사항)" className="w-full p-6 bg-stone-50 rounded-2xl border-none outline-none focus:ring-2 focus:ring-brand-red/20 transition-all font-bold resize-none"></textarea>
+                  <button type="submit" className="w-full py-6 bg-brand-ink text-white font-black text-xl rounded-2xl shadow-2xl hover:bg-brand-red transition-all mt-4">
+                    VIP 상담 신청하기
+                  </button>
+                </form>
               </section>
             </main>
           </div>
         ) : (
           <div className="fade-in-up py-10 space-y-24">
-            <div className="text-center">
-              <h2 className="text-7xl font-black text-stone-900 mb-10 tracking-tighter">성명학 5대 원칙</h2>
-              <p className="text-stone-500 italic text-xl">"전통 성명학의 정수를 명경에 담았습니다"</p>
-            </div>
-            <div className="grid gap-14">
+            <h2 className="text-6xl font-black text-brand-ink text-center tracking-tighter">성명학의 도리<span className="text-brand-red">.</span></h2>
+            <div className="grid gap-12">
               {[
-                { t: "발음오행", d: "초성 소리가 서로 상생하는 기운을 갖추어야 인생의 장애가 적고 순탄하게 전진합니다." },
-                { t: "발음음양", d: "획수의 홀수와 짝수가 조화를 이루어야 삶의 기복이 없으며 평화로운 가정을 이룹니다." },
-                { t: "81수리", d: "원격, 형격, 이격, 정격의 수리가 모두 대길해야 평생의 복록을 온전히 누릴 수 있습니다." },
-                { t: "자원오행", d: "한자가 가진 본질적인 기운이 사주에 부족한 에너지를 보충하여 운명을 개척하게 합니다." },
-                { t: "용신분석", d: "기운의 흐름에서 가장 핵심인 용신을 찾아 성명에 녹여내야 비로소 완성된 이름이 됩니다." }
+                {t: "발음오행", d: "성명의 초성 소리가 가진 목·화·토·금·수 오행의 상생 흐름을 분석하여 대인관계와 사회적 성공운을 살핍니다."},
+                {t: "발음음양", d: "이름 획수의 짝수(음)와 홀수(양)가 적절히 조화를 이루어 인생의 굴곡을 줄이고 안정을 도모하는지 판별합니다."},
+                {t: "81수리", d: "수리 철학을 기반으로 초년·중년·장년·총운의 4격(원형이정)을 분석하여 생애 주기별 운세를 확인합니다."},
+                {t: "자원오행 & 용신", d: "상담 시 제공되는 서비스로, 개인의 사주에서 부족한 기운(용신)을 한자의 부수가 가진 오행(자원오행)으로 보강하는 고차원 분석법입니다."}
               ].map((item, i) => (
-                <div key={i} className="oriental-card p-14 group">
-                  <h4 className="text-4xl font-black text-[#8b2e2e] mb-8 flex items-center gap-6">
-                    <span className="w-12 h-px bg-[#8b2e2e]"></span>
-                    {item.t}
-                  </h4>
-                  <p className="text-stone-600 text-lg leading-[2.2] font-medium">{item.d}</p>
+                <div key={i} className="premium-oriental-card p-12 !border-l-brand-gold">
+                  <h4 className="text-2xl font-black text-brand-red mb-6">{item.t}</h4>
+                  <p className="text-stone-600 leading-loose text-lg font-medium">{item.d}</p>
                 </div>
               ))}
             </div>
           </div>
         )}
-      </div>
 
-      <footer className="bg-white border-t border-stone-100 py-32 text-center">
-        <h2 className="text-6xl font-black text-stone-900 tracking-[0.4em] mb-6">明鏡</h2>
-        <p className="text-[#c5a059] text-[12px] font-black tracking-[0.8em] mb-20 uppercase">The Mirror of Destiny</p>
-        <p className="text-stone-400 text-sm font-medium opacity-60">Copyright &copy; 2026 MyeongGyeong. All Rights Reserved.</p>
-      </footer>
+        {/* Footer for Trust (AdSense requirement) */}
+        <footer className="mt-40 pt-20 border-t border-stone-200 text-center pb-10">
+          <div className="mb-10 opacity-30">
+            <span className="text-2xl font-black text-brand-ink tracking-tighter">明鏡</span>
+          </div>
+          <div className="flex justify-center gap-6 text-[10px] font-black text-stone-400 mb-8 tracking-widest uppercase">
+            <button>이용약관</button>
+            <button>개인정보처리방침</button>
+            <button>문의하기</button>
+          </div>
+          <p className="text-[10px] text-stone-300 font-medium">© 2024 MYEONGGYEONG. ALL RIGHTS RESERVED. <br/>이 서비스는 주역 성명학 원리에 기반한 AI 분석 리포트를 제공합니다.</p>
+        </footer>
+      </div>
 
       {curSlot !== null && (
         <HanjaSelector 

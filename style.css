@@ -1,66 +1,128 @@
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* 프리미엄 리포트 스타일링 */
 
-:root {
-  --deep-red: #8b2e2e;
-  --gold: #c5a059;
-  --paper: #fdfaf5;
-  --accent-gold: #e5d5b7;
+body {
+  background-image: 
+    radial-gradient(circle at 50% 50%, rgba(197, 160, 89, 0.05) 0%, transparent 70%),
+    url("https://www.transparenttextures.com/patterns/natural-paper.png");
 }
 
-@layer base {
-  body {
-    font-family: 'Noto Serif KR', serif;
-    background-color: var(--paper);
-    background-image: 
-      radial-gradient(circle at 50% 50%, rgba(229, 213, 183, 0.25) 0%, transparent 80%),
-      url("https://www.transparenttextures.com/patterns/cream-paper.png");
-    color: #1a1a1a;
-    -webkit-font-smoothing: antialiased;
-    overflow-x: hidden;
-  }
+/* 성명학 카드 */
+.premium-oriental-card {
+  background: white;
+  border-radius: 3rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(197, 160, 89, 0.1);
 }
 
-.oriental-card {
-  background: rgba(255, 255, 255, 0.96);
-  backdrop-filter: blur(15px);
-  border: 1px solid rgba(197, 160, 89, 0.3);
-  border-radius: 2.5rem;
-  box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.1);
-  transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+.premium-oriental-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 16px;
+  background: linear-gradient(to bottom, #4a1c22, #8b2e2e);
 }
 
-.oriental-card:hover {
-  transform: translateY(-10px);
-  border-color: var(--deep-red);
-  box-shadow: 0 40px 80px -20px rgba(139, 46, 46, 0.15);
+/* 큰 수묵화 느낌의 배경 텍스트 */
+.bg-label-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -80%);
+  font-size: 8rem;
+  font-weight: 900;
+  color: #fbfbfb;
+  pointer-events: none;
+  letter-spacing: -0.05em;
+  z-index: 0;
+  opacity: 0.6;
 }
 
-.premium-btn {
-  background: linear-gradient(135deg, #8b2e2e 0%, #4a1c22 100%);
-  color: #fff;
-  border-radius: 1.5rem;
-  box-shadow: 0 15px 30px -10px rgba(139, 46, 46, 0.5);
+.input-premium {
+  background: transparent;
+  border: none;
+  outline: none;
+  text-align: center;
+  font-size: 4rem;
+  font-weight: 900;
+  color: #1c1917;
+  width: 100%;
+  padding-top: 3.5rem;
+  padding-bottom: 0.5rem;
+  position: relative;
+  z-index: 10;
+  transition: transform 0.3s ease;
+}
+
+.input-premium:focus {
+  transform: scale(1.05);
+}
+
+.input-border {
+  width: 2.5rem;
+  height: 2px;
+  background-color: #e5e7eb;
+  margin: 0 auto;
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.premium-btn:hover {
-  transform: translateY(-4px) scale(1.02);
-  box-shadow: 0 20px 40px -10px rgba(139, 46, 46, 0.6);
+.input-premium:focus + .input-border {
+  width: 4rem;
+  background-color: #4a1c22;
 }
 
-.premium-btn:active {
-  transform: scale(0.97);
+.stroke-count-text {
+  font-size: 10px;
+  color: #c5a059;
+  font-weight: 900;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  margin-top: 1.5rem;
+  display: block;
+  text-align: center;
 }
 
-.input-field {
-  @apply bg-transparent border-b-2 border-stone-200 outline-none focus:border-[#8b2e2e] focus:text-[#8b2e2e] transition-all py-4 text-center text-5xl font-black;
+/* 분석 버튼 */
+.btn-destiny {
+  background: #4a1c22;
+  width: 100%;
+  padding: 1.8rem 0;
+  border-radius: 2rem;
+  color: white;
+  font-weight: 900;
+  font-size: 1.4rem;
+  letter-spacing: -0.02em;
+  box-shadow: 0 25px 50px -12px rgba(74, 28, 34, 0.4);
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
 }
 
+.btn-destiny::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%; width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: 0.5s;
+}
+
+.btn-destiny:hover::after {
+  left: 100%;
+}
+
+.btn-destiny:active {
+  transform: scale(0.96);
+}
+
+/* 애니메이션 */
 .fade-in-up {
-  animation: fadeInUp 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: fadeInUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 @keyframes fadeInUp {
@@ -68,6 +130,9 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: var(--paper); }
-::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
+.oriental-card {
+  background: white;
+  border-radius: 2rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+  border: 1px solid rgba(0,0,0,0.05);
+}
