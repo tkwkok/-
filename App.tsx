@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { GoogleGenAI } from "@google/genai";
 import { AnalysisMode, HanjaItem, FortuneResult } from './types';
 import { getHangulStroke, analyzeFortune } from './services/strokeEngine';
@@ -37,7 +37,7 @@ const App: React.FC = () => {
       timer = setInterval(() => {
         idx = (idx + 1) % loadingMessages.length;
         setLoadingMsg(loadingMessages[idx]);
-      }, 3000); // 3초 간격으로 로딩 메시지 순환
+      }, 3000); // 3 seconds interval for better readability
     }
     return () => clearInterval(timer);
   }, [isLoading]);
@@ -53,33 +53,32 @@ const App: React.FC = () => {
   }, [view]);
 
   /**
-   * 한글 입력 핸들러: 
-   * IME 조합 중 글자가 끊기지 않도록 마지막 완성/조합 중인 문자만 안전하게 추출합니다.
-   * input 태그의 maxLength={2} 설정과 결합되어 조합 버퍼를 허용하면서도 최종 1글자만 상태에 저장합니다.
+   * Refined Hangul input handler:
+   * Captures only the latest character entered to handle IME composition correctly.
+   * By using maxLength={2} in the input, we allow a buffer for composition while 
+   * this function ensures the final state only stores the resolved character.
    */
-  const handleHangulInput = (key: 's' | 'n1' | 'n2', val: string) => {
-    // 입력값에서 가장 마지막 글자(덩어리)만 취하여 상태 업데이트 (IME 조합 버퍼 유지용)
+  const handleHangulInput = useCallback((key: 's' | 'n1' | 'n2', val: string) => {
     const latestChar = val.length > 0 ? val.slice(-1) : "";
     setNameInput(prev => ({ ...prev, [key]: latestChar }));
-  };
+  }, []);
 
   const runAnalysis = async () => {
     let sStrokes = 0, n1Strokes = 0, n2Strokes = 0;
     let sChar = '', n1Char = '', n2Char = '';
 
     if (mode === AnalysisMode.HANGUL) {
-      // 분석 직전 공백 제거 및 문자 확정
+      // Step 1: Trim and validate presence of all 3 characters
       const sVal = nameInput.s.trim();
       const n1Val = nameInput.n1.trim();
       const n2Val = nameInput.n2.trim();
 
-      // 성함 3글자가 모두 공백 없이 채워졌는지 엄격히 체크
-      if (sVal.length === 0 || n1Val.length === 0 || n2Val.length === 0) { 
+      if (!sVal || !n1Val || !n2Val) { 
         alert("성함 3글자를 모두 빈칸 없이 입력해 주세요. (성, 이름 첫자, 이름 끝자)"); 
         return; 
       }
       
-      // 혹시라도 여러 글자가 입력된 경우를 대비해 마지막 글자만 분석 대상으로 삼음
+      // Step 2: Ensure we only analyze the last character in case of double-entry
       sChar = sVal.slice(-1);
       n1Char = n1Val.slice(-1);
       n2Char = n2Val.slice(-1);
@@ -88,6 +87,7 @@ const App: React.FC = () => {
       n1Strokes = getHangulStroke(n1Char);
       n2Strokes = getHangulStroke(n2Char);
     } else {
+      // Hanja mode validation
       if (hanjaItems.some(x => x === null)) { 
         alert("한자 3자를 모두 선택해 주세요."); 
         return; 
@@ -118,13 +118,13 @@ const App: React.FC = () => {
       
       const prompt = `당신은 대한민국 최고의 정통 주역 성명학 권위자입니다. 다음 이름 '${fullName}'에 대해 전문가 수준의 심층 분석 리포트를 작성해 주세요. 
       분석 시 다음 5대 핵심 요소를 반드시 전문적으로 다뤄주세요:
-      1. 발음오행: 소리의 파동(상생/상극)이 사회적 평판, 대인관계의 질, 그리고 외부로부터 오는 기회에 미치는 영향.
+      1. 발음오행: 소리의 파동(상생/상극)이 사회적 평판, 대인관계의 질, 외부 기회에 미치는 영향.
       2. 발음음양: 획수의 음양 균형이 심리적 안정성과 인생의 굴곡을 어떻게 조율하는지.
-      3. 81수리 원형이정(元亨利貞): 초년(원격), 중년(형격), 장년(이격), 총운(정격)의 4격 수리가 인생 주기별로 가져올 구체적인 변화와 성취.
-      4. 재물운 및 사회적 성공: 성명의 기운이 금전의 유입과 보존, 그리고 직업적 명망에 미치는 긍정적 파동을 매우 상세하고 희망적으로 기술.
-      5. 종합 제언: 자원오행의 관점에서 부족한 기운을 일상에서 어떻게 보충할 수 있는지(행운의 색상, 행운의 방향 등).
+      3. 81수리 원형이정(元亨利貞): 초년(원격), 중년(형격), 장년(이격), 총운(정격)의 4격 수리가 인생 주기별로 가져올 구체적인 성취.
+      4. 재물운 및 사회적 성공: 성명의 기운이 금전 유입과 직업적 명망에 미치는 긍정적 파동을 상세하고 희망적으로 기술.
+      5. 종합 제언: 자원오행의 관점에서 부족한 기운을 일상에서 어떻게 보충할 수 있는지(행운의 색상, 방향 등).
 
-      문체는 매우 격조 있고 정중하며, 사용자가 자신의 삶에 대해 깊은 자부심과 희망을 느낄 수 있도록 우아하고 품위 있는 언어를 사용해 주세요.`;
+      문체는 매우 격조 있고 정중하며, 사용자가 자신의 삶에 대해 자부심과 희망을 느낄 수 있도록 우아하고 품위 있는 언어를 사용해 주세요.`;
 
       const response = await ai.models.generateContent({
         model: 'gemini-3-flash-preview',
@@ -217,6 +217,7 @@ const App: React.FC = () => {
                             maxLength={2}
                             value={nameInput[key as 's'|'n1'|'n2']}
                             onChange={(e) => handleHangulInput(key as 's'|'n1'|'n2', e.target.value)}
+                            onFocus={(e) => e.target.select()}
                             className="input-premium cursor-text transition-all hover:scale-105 focus:scale-105"
                             placeholder="?"
                           />
