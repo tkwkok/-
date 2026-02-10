@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { GoogleGenAI } from "@google/genai";
 import { AnalysisMode, HanjaItem, FortuneResult } from './types';
@@ -69,8 +68,8 @@ const App: React.FC = () => {
       2. 발음음양: 획수의 음양 조화가 선사하는 삶의 안정성과 굴곡
       3. 81수리: 원형이정(元亨利貞) 4격이 삶의 주기(초년, 중년, 장년, 노년)에 미치는 영향
       4. 자원오행 제언: 한자의 근원적 에너지가 사주의 부족한 기운을 어떻게 보완할 수 있는지
-      5. 용신분석 기반 운세: 이름이 금전운, 성공운, 재물운에 미치는 긍정적 파동
-      문체는 매우 격조 있고 정중하게 작성하며, 사용자가 삶의 희망을 발견할 수 있도록 품위 있는 언어를 사용해 주세요.`;
+      5. 용신분석 기반 운세: 이름이 가진 '재물운', '금전운', '성공운'에 미치는 파동과 잠재력을 상세히 기술
+      문체는 매우 격조 있고 정중하게 작성하며, 사용자가 삶의 희망을 발견할 수 있도록 품위 있는 언어를 사용해 주세요. 특히 '재물운'에 대해 희망적인 메시지를 담아주세요.`;
 
       const response = await ai.models.generateContent({
         model: 'gemini-3-flash-preview',
@@ -98,8 +97,8 @@ const App: React.FC = () => {
 
   return (
     <div className="flex flex-col min-h-screen">
-      {/* 고정 헤더 - 그림자 및 보더 조정 */}
-      <nav className="sticky top-0 z-40 bg-brand-paper/90 backdrop-blur-lg h-16 flex items-center justify-between px-6 border-b border-brand-gold/20 shadow-sm">
+      {/* 고정 헤더 - 스타일 정밀 조정 */}
+      <nav className="sticky top-0 z-40 bg-brand-paper/90 backdrop-blur-lg h-16 flex items-center justify-between px-6 border-b border-brand-gold/10 shadow-sm">
         <button onClick={() => setView('main')} className="flex items-center gap-2">
           <div className="w-8 h-8 bg-brand-red rounded-lg flex items-center justify-center shadow-md">
             <span className="text-white text-sm font-black">明</span>
