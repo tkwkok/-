@@ -46,7 +46,7 @@ export const getHangulStroke = (char: string): number => {
 };
 
 export const analyzeFortune = (s: number, n1: number, n2: number, sChar: string, n1Char: string, n2Char: string): FortuneResult[] => {
-  // 81수리 원형이정(元亨利貞) 정통 산출식 (Excel Logic 기반)
+  // 81수리 원형이정(元亨利貞) 정통 산출식
   const won = n1 + n2;   // 원격(초년운): 이름 상+하
   const hyung = s + n1;  // 형격(중년운): 성 + 이름 상
   const lee = s + n2;    // 이격(장년운): 성 + 이름 하
@@ -62,7 +62,7 @@ export const analyzeFortune = (s: number, n1: number, n2: number, sChar: string,
     category: '오행',
     title: '발음오행(發音五行)',
     name: `${e1}-${e2}-${e3}`,
-    description: `성명의 초성이 ${e1}, ${e2}, ${e3}의 기운을 담고 있습니다. 소리의 파동이 상생하면 사회적 성공이 빠르고 상극하면 고난이 따릅니다.`,
+    description: `소리의 파동이 ${e1}, ${e2}, ${e3}의 흐름을 형성합니다. 상생의 조화는 주변의 도움을 이끌어내며, 특히 대인관계와 사회적 명망에서 강력한 이점을 발휘합니다.`,
     status: 'neutral',
     tags: [e1, e2, e3]
   });
@@ -77,33 +77,32 @@ export const analyzeFortune = (s: number, n1: number, n2: number, sChar: string,
     title: '음양조화(陰陽調和)',
     name: `${y1}-${y2}-${y3}`,
     description: isBalanced 
-      ? "음과 양이 조화롭게 섞여 있어 인생이 평탄하고 성품이 원만합니다." 
-      : "음양의 균형이 한쪽으로 치우쳐 삶의 굴곡이 생길 수 있습니다.",
+      ? "음과 양이 완벽한 균형을 이루어 삶의 기초가 탄탄합니다. 어떠한 시련에도 유연하게 대처할 수 있는 내면의 힘을 상징합니다." 
+      : "기운이 한쪽으로 집중되어 있어 강력한 개성을 지닙니다. 환경의 조화를 통해 부족한 기운을 보완하면 독보적인 성취가 가능합니다.",
     status: isBalanced ? 'good' : 'bad'
   });
 
-  // 3. 81수리 분석 (형격과 정격 중심)
-  // 주역 64괘 도출을 위해 상괘(성+명상)와 하괘(성+명상+명하)의 모듈러 8 적용
-  const hyungKey = `${getMod8(hyung)}${getMod8(jung)}`;
-  const hyungHex = HEXAGRAM_DB[hyungKey] || { name: '중년의 기상', desc: '내실을 기하면 대성합니다.', status: 'neutral' };
+  // 3. 81수리 분석 (원형이정 4격 기반 Juyeok mapping)
+  const hKey = `${getMod8(hyung)}${getMod8(won)}`;
+  const hHex = HEXAGRAM_DB[hKey] || { name: '형격(중년)', desc: '지혜로운 처세가 요구되는 시기입니다.', status: 'neutral' };
   
-  const jungKey = `${getMod8(jung)}${getMod8(won)}`;
-  const jungHex = HEXAGRAM_DB[jungKey] || { name: '평생 총운', desc: '근본을 지키면 하늘이 돕습니다.', status: 'neutral' };
+  const jKey = `${getMod8(jung)}${getMod8(won)}`;
+  const jHex = HEXAGRAM_DB[jKey] || { name: '정격(총운)', desc: '근본을 지키면 대업을 이룹니다.', status: 'neutral' };
 
   results.push({
     category: '수리',
-    title: '81수리: 형격(중년운)',
-    name: hyungHex.name,
-    description: `수리 ${hyung}획: ${hyungHex.desc}`,
-    status: hyungHex.status as any
+    title: '형격(중년운): 사회적 성공',
+    name: hHex.name,
+    description: `수리 ${hyung}획의 기운이 인생의 황금기인 중년운을 주도합니다. ${hHex.desc}`,
+    status: hHex.status as any
   });
 
   results.push({
     category: '수리',
-    title: '81수리: 정격(총운)',
-    name: jungHex.name,
-    description: `수리 ${jung}획: ${jungHex.desc}`,
-    status: jungHex.status as any
+    title: '정격(총운): 인생의 결실',
+    name: jHex.name,
+    description: `수리 ${jung}획은 삶의 전체를 관통하는 핵심 파동입니다. ${jHex.desc} 최종적인 부와 귀를 결정짓는 근간이 됩니다.`,
+    status: jHex.status as any
   });
 
   return results;
