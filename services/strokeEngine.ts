@@ -3,7 +3,9 @@ import { FortuneResult } from '../types';
 
 const getMod8 = (n: number) => (n % 8 === 0 ? 8 : n % 8);
 
-// 발음오행 판별 (초성 기준 정밀 판별)
+/**
+ * 발음오행 판별 (훈민정음 해례본 기준 정통 성명학 분류)
+ */
 const getFiveElements = (char: string) => {
   const code = char.charCodeAt(0) - 0xAC00;
   if (code < 0 || code > 11171) return '미상';
@@ -19,7 +21,6 @@ const getFiveElements = (char: string) => {
   return '미상';
 };
 
-// 음양 판별
 const getYinYang = (stroke: number) => (stroke % 2 === 0 ? '음(陰)' : '양(陽)');
 
 export const getHangulStroke = (char: string): number => {
@@ -80,9 +81,10 @@ export const analyzeFortune = (s: number, n1: number, n2: number, sChar: string,
     status: isBalanced ? 'good' : 'bad'
   });
 
-  // 3. 81수리 분석 (형격과 정격 중심)
-  const hyungHex = HEXAGRAM_DB[`${getMod8(hyung)}${getMod8(won)}`] || { name: '중년운', desc: '평탄한 시기입니다.', status: 'neutral' };
-  const jungHex = HEXAGRAM_DB[`${getMod8(jung)}${getMod8(won)}`] || { name: '평생 총운', desc: '하늘의 뜻을 따르십시오.', status: 'neutral' };
+  // 3. 81수리 분석
+  const wonHex = HEXAGRAM_DB[`${getMod8(n1)}${getMod8(n2)}`] || { name: '초년운', desc: '기초를 다지는 시기입니다.', status: 'neutral' };
+  const hyungHex = HEXAGRAM_DB[`${getMod8(s)}${getMod8(n1)}`] || { name: '중년운', desc: '평탄한 시기입니다.', status: 'neutral' };
+  const jungHex = HEXAGRAM_DB[`${getMod8(s+n1)}${getMod8(s+n1+n2)}`] || { name: '평생 총운', desc: '하늘의 뜻을 따르십시오.', status: 'neutral' };
 
   results.push({
     category: '수리',

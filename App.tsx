@@ -59,7 +59,8 @@ const App: React.FC = () => {
     setResults(baseResults);
 
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+      // 최신 SDK 가이드라인에 따른 초기화
+      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
       const fullName = mode === AnalysisMode.HANGUL ? `${nameInput.s}${nameInput.n1}${nameInput.n2}` : hanjaItems.map(h => h?.h).join('');
       
       const prompt = `당신은 대한민국 최고의 정통 주역 성명학 권위자입니다. 다음 이름 '${fullName}'에 대해 전문가 수준의 심층 분석 리포트를 작성해 주세요. 
@@ -75,8 +76,10 @@ const App: React.FC = () => {
         model: 'gemini-3-flash-preview',
         contents: prompt
       });
+      // response.text()가 아닌 response.text 프로퍼티 사용
       setAiAnalysis(response.text || "분석 리포트를 생성하는 중 오류가 발생했습니다.");
     } catch (e) {
+      console.error(e);
       setAiAnalysis("AI 분석 기능을 일시적으로 사용할 수 없습니다. 기본 분석 수치를 참고해 주세요.");
     }
     
@@ -97,7 +100,7 @@ const App: React.FC = () => {
 
   return (
     <div className="flex flex-col min-h-screen">
-      {/* 고정 헤더 - 디자인 미세 정밀 조정 */}
+      {/* 고정 헤더 */}
       <nav className="sticky top-0 z-40 bg-brand-paper/95 backdrop-blur-md h-16 flex items-center justify-between px-6 border-b border-brand-gold/10 shadow-sm">
         <button onClick={() => setView('main')} className="flex items-center gap-2">
           <div className="w-8 h-8 bg-brand-red rounded-lg flex items-center justify-center shadow-lg transition-transform active:scale-95">
@@ -185,11 +188,6 @@ const App: React.FC = () => {
                       <h3 className="text-2xl font-black mb-4 tracking-tighter">당신만을 위한 이름, '명경'이 짓습니다.</h3>
                       <div className="space-y-2 mb-8">
                         <p className="text-stone-400 text-sm leading-relaxed">단순 수치 분석을 넘어 사주와 조화를 이루는 최고의 이름을 제안합니다.</p>
-                        <div className="flex flex-wrap gap-2 pt-2">
-                           {["발음오행", "발음음양", "81수리", "자원오행", "용신분석"].map(tag => (
-                             <span key={tag} className="text-[10px] bg-white/5 border border-white/10 px-2 py-1 rounded-md text-brand-gold font-bold">#{tag}</span>
-                           ))}
-                        </div>
                       </div>
                       <button onClick={() => setView('consult')} className="w-full py-4 bg-brand-gold text-brand-ink font-black rounded-xl text-sm shadow-lg hover:bg-white transition-all transform active:scale-95">
                         프리미엄 상담 예약하기
@@ -226,35 +224,14 @@ const App: React.FC = () => {
              <header className="mb-12">
                <span className="text-brand-gold font-black text-[10px] tracking-widest uppercase mb-2 block">Premium Consultation</span>
                <h2 className="text-4xl font-black text-brand-ink tracking-tighter">1:1 프리미엄 작명 상담</h2>
-               <p className="text-stone-500 text-sm mt-4 leading-relaxed font-medium italic">
-                 "이름은 불려질 때마다 생기는 운명의 파동입니다."<br/>
-                 평생 당신을 지켜줄 귀한 이름을 정통 원리로 선사합니다.
-               </p>
              </header>
 
              <div className="bg-brand-paper rounded-3xl p-8 mb-10 border border-brand-gold/20 shadow-inner">
                <h4 className="font-black text-brand-red mb-6 text-sm underline underline-offset-4 decoration-brand-gold">VIP 제공 서비스 내역</h4>
                <ul className="space-y-4 text-xs font-bold text-stone-700">
-                 <li className="flex items-center gap-3">
-                   <span className="text-brand-gold text-lg">✦</span> 
-                   <span>정통 <span className="text-brand-red">발음오행</span> 및 <span className="text-brand-red">발음음양</span> 심층 조화 분석</span>
-                 </li>
-                 <li className="flex items-center gap-3">
-                   <span className="text-brand-gold text-lg">✦</span> 
-                   <span><span className="text-brand-red">81수리</span> 원형이정(元亨利貞) 4격 완성 시스템 적용</span>
-                 </li>
-                 <li className="flex items-center gap-3">
-                   <span className="text-brand-gold text-lg">✦</span> 
-                   <span>부족한 기운을 채우는 정밀 <span className="text-brand-red">자원오행(字源五行)</span> 배치</span>
-                 </li>
-                 <li className="flex items-center gap-3">
-                   <span className="text-brand-gold text-lg">✦</span> 
-                   <span>억부/조후 기반 개인 맞춤형 <span className="text-brand-red">용신(用神)</span> 정밀 판별</span>
-                 </li>
-                 <li className="flex items-center gap-3">
-                   <span className="text-brand-gold text-lg">✦</span> 
-                   <span>주역 64괘 기반 총운 리포트 및 작명 인증서 발송</span>
-                 </li>
+                 <li className="flex items-center gap-3"><span className="text-brand-gold text-lg">✦</span><span>정통 발음오행 및 발음음양 심층 조화 분석</span></li>
+                 <li className="flex items-center gap-3"><span className="text-brand-gold text-lg">✦</span><span>81수리 원형이정(元亨利貞) 4격 완성 시스템 적용</span></li>
+                 <li className="flex items-center gap-3"><span className="text-brand-gold text-lg">✦</span><span>부족한 기운을 채우는 정밀 자원오행(字源五行) 배치</span></li>
                </ul>
              </div>
 
@@ -272,20 +249,14 @@ const App: React.FC = () => {
         )}
 
         <footer className="mt-40 border-t border-stone-200 pt-16 pb-12 text-center bg-white/50">
-          <div className="flex justify-center gap-8 text-[9px] font-black text-stone-400 tracking-widest uppercase mb-10">
-            <button className="hover:text-brand-red transition-colors">이용약관</button>
-            <button className="hover:text-brand-red transition-colors">개인정보처리방침</button>
-            <button className="hover:text-brand-red transition-colors">고객센터</button>
-          </div>
           <p className="text-[10px] text-stone-400 font-bold leading-loose max-w-xs mx-auto">
             © 2024 MYEONGGYEONG PROJECT. ALL RIGHTS RESERVED.<br/>
-            본 서비스는 정통 성명학 원리를 기반으로 한 AI 분석 리포트입니다.<br/>
-            모든 분석 결과는 성명학적 가이드라인이며, 중요한 결정은 반드시 전문가 상담을 권장합니다.
+            본 서비스는 정통 성명학 원리를 기반으로 한 AI 분석 리포트입니다.
           </p>
         </footer>
       </div>
 
-      {/* 모바일 하단 탭 바 - 디자인 완성도 강화 */}
+      {/* 모바일 하단 탭 바 */}
       <div className="mobile-nav md:hidden border-t border-stone-100 shadow-[0_-5px_20px_-5px_rgba(0,0,0,0.08)] bg-white/95">
         <button onClick={() => setView('main')} className={`flex flex-col items-center gap-1 transition-all ${view === 'main' ? 'text-brand-red scale-110' : 'text-stone-300'}`}>
           <div className="text-xl">{view === 'main' ? '⛩️' : '🏠'}</div>
