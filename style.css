@@ -15,49 +15,59 @@
     font-family: 'Noto Serif KR', serif;
     background-color: var(--paper);
     background-image: 
-      radial-gradient(circle at 50% 50%, rgba(229, 213, 183, 0.1) 0%, transparent 80%),
+      radial-gradient(circle at 50% 50%, rgba(229, 213, 183, 0.2) 0%, transparent 80%),
       url("https://www.transparenttextures.com/patterns/cream-paper.png");
     color: #1a1a1a;
+    margin: 0;
+    padding: 0;
     -webkit-font-smoothing: antialiased;
   }
 }
 
 .oriental-card {
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(197, 160, 89, 0.2);
-  border-radius: 2rem;
-  box-shadow: 0 20px 40px -20px rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(197, 160, 89, 0.3);
+  border-radius: 2.5rem;
+  box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.1);
   transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .oriental-card:hover {
-  border-color: rgba(197, 160, 89, 0.4);
-  transform: translateY(-5px);
-  box-shadow: 0 30px 60px -30px rgba(139, 46, 46, 0.12);
+  transform: translateY(-8px);
+  border-color: var(--deep-red);
+  box-shadow: 0 40px 80px -20px rgba(139, 46, 46, 0.15);
 }
 
 .premium-btn {
   background: linear-gradient(135deg, #8b2e2e 0%, #4a1c22 100%);
-  color: #fff;
-  position: relative;
-  overflow: hidden;
-  transition: all 0.3s;
+  color: white;
+  border-radius: 1.5rem;
+  box-shadow: 0 15px 30px -10px rgba(139, 46, 46, 0.5);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .premium-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(139, 46, 46, 0.2);
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 20px 40px -10px rgba(139, 46, 46, 0.6);
+}
+
+.premium-btn:active {
+  transform: scale(0.98);
+}
+
+.input-field {
+  @apply bg-transparent border-b-2 border-stone-100 outline-none focus:border-[#8b2e2e] focus:text-[#8b2e2e] transition-all py-3 text-center text-5xl font-black;
 }
 
 .fade-in-up {
-  animation: fadeInUp 0.8s ease-out forwards;
+  animation: fadeInUp 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(40px);
   }
   to {
     opacity: 1;
