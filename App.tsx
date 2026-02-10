@@ -69,7 +69,7 @@ const App: React.FC = () => {
       2. 발음음양: 획수의 음양 조화가 선사하는 삶의 안정성과 굴곡
       3. 81수리: 원형이정(元亨利貞) 4격이 삶의 주기(초년, 중년, 장년, 노년)에 미치는 영향
       4. 자원오행 제언: 한자의 근원적 에너지가 사주의 부족한 기운을 어떻게 보완할 수 있는지
-      5. 용신분석 기반 운세: 이름이 금전운과 성공운에 미치는 긍정적 파동
+      5. 용신분석 기반 운세: 이름이 금전운, 성공운, 재물운에 미치는 긍정적 파동
       문체는 매우 격조 있고 정중하게 작성하며, 사용자가 삶의 희망을 발견할 수 있도록 품위 있는 언어를 사용해 주세요.`;
 
       const response = await ai.models.generateContent({
@@ -98,8 +98,8 @@ const App: React.FC = () => {
 
   return (
     <div className="flex flex-col min-h-screen">
-      {/* 고정 헤더 */}
-      <nav className="sticky top-0 z-40 bg-brand-paper/90 backdrop-blur-lg h-16 flex items-center justify-between px-6 border-b border-brand-gold/10 shadow-md">
+      {/* 고정 헤더 - 그림자 및 보더 조정 */}
+      <nav className="sticky top-0 z-40 bg-brand-paper/90 backdrop-blur-lg h-16 flex items-center justify-between px-6 border-b border-brand-gold/20 shadow-sm">
         <button onClick={() => setView('main')} className="flex items-center gap-2">
           <div className="w-8 h-8 bg-brand-red rounded-lg flex items-center justify-center shadow-md">
             <span className="text-white text-sm font-black">明</span>
@@ -107,9 +107,9 @@ const App: React.FC = () => {
           <span className="text-brand-ink text-lg font-black tracking-tighter">명경</span>
         </button>
         <div className="hidden md:flex gap-8">
-          <button onClick={() => setView('main')} className={`text-xs font-black transition-colors hover:text-brand-red ${view === 'main' ? 'text-brand-red underline underline-offset-8' : 'text-stone-400'}`}>홈</button>
-          <button onClick={() => setView('guide')} className={`text-xs font-black transition-colors hover:text-brand-red ${view === 'guide' ? 'text-brand-red underline underline-offset-8' : 'text-stone-400'}`}>성명학 원리</button>
-          <button onClick={() => setView('consult')} className={`text-xs font-black transition-colors hover:text-brand-red ${view === 'consult' ? 'text-brand-red underline underline-offset-8' : 'text-stone-400'}`}>VIP 상담</button>
+          <button onClick={() => setView('main')} className={`text-xs font-black transition-colors hover:text-brand-red ${view === 'main' ? 'text-brand-red underline underline-offset-8 decoration-2' : 'text-stone-400'}`}>홈</button>
+          <button onClick={() => setView('guide')} className={`text-xs font-black transition-colors hover:text-brand-red ${view === 'guide' ? 'text-brand-red underline underline-offset-8 decoration-2' : 'text-stone-400'}`}>성명학 원리</button>
+          <button onClick={() => setView('consult')} className={`text-xs font-black transition-colors hover:text-brand-red ${view === 'consult' ? 'text-brand-red underline underline-offset-8 decoration-2' : 'text-stone-400'}`}>VIP 상담</button>
         </div>
       </nav>
 
@@ -272,7 +272,7 @@ const App: React.FC = () => {
           </div>
         )}
 
-        {/* 하단 정보 섹션 (애드센스 신뢰성 확보 필수 요소) */}
+        {/* 하단 정보 섹션 */}
         <footer className="mt-40 border-t border-stone-200 pt-16 pb-12 text-center bg-white/50">
           <div className="flex justify-center gap-8 text-[9px] font-black text-stone-400 tracking-widest uppercase mb-10">
             <button className="hover:text-brand-red transition-colors">이용약관</button>
