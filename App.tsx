@@ -55,10 +55,10 @@ const App: React.FC = () => {
   /**
    * 한글 입력 핸들러: 
    * IME 조합 중 글자가 끊기지 않도록 마지막 완성/조합 중인 문자만 안전하게 추출합니다.
-   * maxLength={2} 설정과 함께 사용하여 조합 버퍼를 확보합니다.
+   * input 태그의 maxLength={2} 설정과 결합되어 조합 버퍼를 허용하면서도 최종 1글자만 상태에 저장합니다.
    */
   const handleHangulInput = (key: 's' | 'n1' | 'n2', val: string) => {
-    // 입력값에서 가장 마지막 글자(덩어리)만 취하여 상태 업데이트 (IME 조합 버퍼 유지)
+    // 입력값에서 가장 마지막 글자(덩어리)만 취하여 상태 업데이트 (IME 조합 버퍼 유지용)
     const latestChar = val.length > 0 ? val.slice(-1) : "";
     setNameInput(prev => ({ ...prev, [key]: latestChar }));
   };
@@ -68,29 +68,36 @@ const App: React.FC = () => {
     let sChar = '', n1Char = '', n2Char = '';
 
     if (mode === AnalysisMode.HANGUL) {
-      // 분석 직전 공백 제거 및 문자 추출
-      sChar = nameInput.s.trim();
-      n1Char = nameInput.n1.trim();
-      n2Char = nameInput.n2.trim();
+      // 분석 직전 공백 제거 및 문자 확정
+      const sVal = nameInput.s.trim();
+      const n1Val = nameInput.n1.trim();
+      const n2Val = nameInput.n2.trim();
 
       // 성함 3글자가 모두 공백 없이 채워졌는지 엄격히 체크
-      if (sChar.length === 0 || n1Char.length === 0 || n2Char.length === 0) { 
-        alert("성함 3글자를 모두 빈칸 없이 입력해 주세요."); 
+      if (sVal.length === 0 || n1Val.length === 0 || n2Val.length === 0) { 
+        alert("성함 3글자를 모두 빈칸 없이 입력해 주세요. (성, 이름 첫자, 이름 끝자)"); 
         return; 
       }
       
-      // 혹시라도 여러 글자가 입력된 경우 첫 글자만 사용
-      sChar = sChar.charAt(0);
-      n1Char = n1Char.charAt(0);
-      n2Char = n2Char.charAt(0);
+      // 혹시라도 여러 글자가 입력된 경우를 대비해 마지막 글자만 분석 대상으로 삼음
+      sChar = sVal.slice(-1);
+      n1Char = n1Val.slice(-1);
+      n2Char = n2Val.slice(-1);
 
       sStrokes = getHangulStroke(sChar);
       n1Strokes = getHangulStroke(n1Char);
       n2Strokes = getHangulStroke(n2Char);
     } else {
-      if (hanjaItems.some(x => x === null)) { alert("한자 3자를 모두 선택해 주세요."); return; }
-      sStrokes = hanjaItems[0]!.s; n1Strokes = hanjaItems[1]!.s; n2Strokes = hanjaItems[2]!.s;
-      sChar = hanjaItems[0]!.k; n1Char = hanjaItems[1]!.k; n2Char = hanjaItems[2]!.k;
+      if (hanjaItems.some(x => x === null)) { 
+        alert("한자 3자를 모두 선택해 주세요."); 
+        return; 
+      }
+      sStrokes = hanjaItems[0]!.s; 
+      n1Strokes = hanjaItems[1]!.s; 
+      n2Strokes = hanjaItems[2]!.s;
+      sChar = hanjaItems[0]!.k; 
+      n1Char = hanjaItems[1]!.k; 
+      n2Char = hanjaItems[2]!.k;
     }
 
     setIsLoading(true);
@@ -114,10 +121,10 @@ const App: React.FC = () => {
       1. 발음오행: 소리의 파동(상생/상극)이 사회적 평판, 대인관계의 질, 그리고 외부로부터 오는 기회에 미치는 영향.
       2. 발음음양: 획수의 음양 균형이 심리적 안정성과 인생의 굴곡을 어떻게 조율하는지.
       3. 81수리 원형이정(元亨利貞): 초년(원격), 중년(형격), 장년(이격), 총운(정격)의 4격 수리가 인생 주기별로 가져올 구체적인 변화와 성취.
-      4. 재물운 및 사회적 성공: 성명의 기운이 금전의 유입과 보존, 그리고 직업적 명망에 미치는 긍정적 파동을 매우 상세하고 희망적으로 기술. 특히 재물운이 강력하게 상승하는 시점과 그 이유를 명확히 짚어주세요.
-      5. 종합 제언: 자원오행의 관점에서 부족한 기운을 일상에서 어떻게 보충할 수 있는지(행운의 색상, 행운의 방향, 인테리어 소품 활용법 포함).
+      4. 재물운 및 사회적 성공: 성명의 기운이 금전의 유입과 보존, 그리고 직업적 명망에 미치는 긍정적 파동을 매우 상세하고 희망적으로 기술.
+      5. 종합 제언: 자원오행의 관점에서 부족한 기운을 일상에서 어떻게 보충할 수 있는지(행운의 색상, 행운의 방향 등).
 
-      문체는 매우 격조 있고 정중하며, 사용자가 자신의 삶에 대해 깊은 자부심과 희망을 느낄 수 있도록 우아하고 품위 있는 언어를 사용해 주세요. 특히 '경제적 번영'과 '사회적 번영'이 이름의 기운을 통해 어떻게 실현될 수 있는지에 대한 심층적 통찰을 포함해 주세요.`;
+      문체는 매우 격조 있고 정중하며, 사용자가 자신의 삶에 대해 깊은 자부심과 희망을 느낄 수 있도록 우아하고 품위 있는 언어를 사용해 주세요.`;
 
       const response = await ai.models.generateContent({
         model: 'gemini-3-flash-preview',
@@ -224,7 +231,7 @@ const App: React.FC = () => {
                         <div className="input-border"></div>
                       </div>
                       <span className="stroke-count-text">
-                        {(mode === AnalysisMode.HANGUL ? getHangulStroke(nameInput[key as 's'|'n1'|'n2'].charAt(0)) : hanjaItems[idx]?.s) || 0} 획
+                        {(mode === AnalysisMode.HANGUL ? getHangulStroke(nameInput[key as 's'|'n1'|'n2'].slice(-1)) : hanjaItems[idx]?.s) || 0} 획
                       </span>
                     </div>
                   ))}
