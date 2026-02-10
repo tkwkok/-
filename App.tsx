@@ -62,12 +62,13 @@ const App: React.FC = () => {
       
       const prompt = `당신은 대한민국 최고의 정통 주역 성명학 권위자입니다. 다음 이름 '${fullName}'에 대해 전문가 수준의 심층 분석 리포트를 작성해 주세요. 
       분석 시 다음 5대 핵심 요소를 반드시 전문적으로 다뤄주세요:
-      1. 발음오행: 소리의 상생/상극이 만드는 대인관계와 사회적 명망
-      2. 발음음양: 획수의 음양 조화가 선사하는 삶의 안정성과 굴곡
-      3. 81수리: 원형이정(元亨利貞) 4격이 삶의 주기(초년, 중년, 장년, 총운)에 미치는 영향
-      4. 자원오행 제언: 한자의 근원적 에너지가 사주의 부족한 기운을 어떻게 보완할 수 있는지
-      5. 용신분석 기반 운세: 이름이 가진 '재물운', '금전운', '성공운'에 미치는 파동과 잠재력을 상세히 기술
-      문체는 정중하고 신뢰감 있게 작성하며, 사용자가 운명의 지도를 발견할 수 있도록 품위 있는 언어를 사용해 주세요. 특히 '재물운'에 대해 매우 긍정적이고 희망적인 메시지를 담아주세요.`;
+      1. 발음오행: 소리의 파동(상생/상극)이 사회적 평판, 대인관계의 질, 그리고 외부로부터 오는 기회에 미치는 영향.
+      2. 발음음양: 획수의 음양 균형이 심리적 안정성과 인생의 굴곡을 어떻게 조율하는지.
+      3. 81수리 원형이정(元亨利貞): 초년(원격), 중년(형격), 장년(이격), 총운(정격)의 4격 수리가 인생 주기별로 가져올 구체적인 변화와 성취.
+      4. 재물운 및 사회적 성공: 성명의 기운이 금전의 유입과 보존, 그리고 직업적 명망에 미치는 긍정적 파동을 매우 상세하고 희망적으로 기술.
+      5. 종합 제언: 자원오행의 관점에서 부족한 기운을 일상에서 어떻게 보충할 수 있는지(색상, 방향 등 소품 활용법 포함).
+
+      문체는 매우 격조 있고 정중하며, 사용자가 자신의 삶에 대해 깊은 자부심과 희망을 느낄 수 있도록 우아한 언어를 사용해 주세요. 특히 '경제적 번영'과 '사회적 성공'에 초점을 맞춘 심층적 통찰을 포함해 주세요.`;
 
       const response = await ai.models.generateContent({
         model: 'gemini-3-flash-preview',
@@ -182,7 +183,7 @@ const App: React.FC = () => {
                       <div className="absolute -right-20 -bottom-20 w-64 h-64 bg-brand-red/10 rounded-full blur-[100px]"></div>
                       <span className="text-brand-gold text-[10px] font-black tracking-[0.4em] uppercase mb-6 block">Premium 1:1 Care</span>
                       <h3 className="text-3xl font-black mb-6 tracking-tighter leading-tight">평생을 함께할 귀한 성명,<br/>명경이 정성으로 짓습니다.</h3>
-                      <button onClick={() => setView('consult')} className="w-full py-5 bg-brand-gold text-brand-ink font-black rounded-2xl text-sm shadow-xl hover:bg-white transition-all transform active:scale-95">
+                      <button onClick={() => setView('consult')} className="w-full py-4 bg-brand-gold text-brand-ink font-black rounded-xl text-sm shadow-lg hover:bg-white transition-all transform active:scale-95">
                         프리미엄 상담 예약하기
                       </button>
                     </div>

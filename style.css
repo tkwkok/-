@@ -1,10 +1,10 @@
-
 /* 프리미엄 리포트 스타일링 */
 
 body {
   background-image: 
     radial-gradient(circle at 50% 50%, rgba(197, 160, 89, 0.03) 0%, transparent 70%),
     url("https://www.transparenttextures.com/patterns/natural-paper.png");
+  overflow-x: hidden;
 }
 
 /* 성명학 카드 */
