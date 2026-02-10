@@ -4,99 +4,31 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>명경(明鏡) | 성명의 이치를 비추는 정통 주역 성명학</title>
-  <meta name="description" content="주역 64괘와 원형이정 원리에 따른 정통 성명학 분석 서비스 명경(明鏡). 이름에 숨겨진 운명과 미래를 거울처럼 맑게 분석해 드립니다.">
-  <meta name="keywords" content="성명학, 주역, 명경, 이름풀이, 작명, 개명, 운세, 64괘, 사주, 이름분석">
+  <title>명경(明鏡) | 정통 주역 성명학 심층 분석</title>
+  <meta name="description" content="이름의 이치를 거울처럼 비추는 정통 주역 성명학 분석 서비스 명경.">
   
-  <!-- PWA 지원 (최신 권고 사항 반영) -->
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="명경">
   <meta name="theme-color" content="#fdfaf5">
-  <link rel="apple-touch-icon" href="https://www.transparenttextures.com/patterns/cream-paper.png">
   
-  <link rel="canonical" href="https://myeonggyeong.netlify.app">
-  
-  <!-- Open Graph / Facebook -->
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://myeonggyeong.netlify.app">
-  <meta property="og:title" content="명경(明鏡) | 정통 주역 성명학">
-  <meta property="og:description" content="이름에 담긴 하늘의 뜻을 비추다. 주역 64괘로 분석하는 당신의 평생 운세.">
-  <meta property="og:image" content="https://www.transparenttextures.com/patterns/cream-paper.png">
-
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&display=swap" rel="stylesheet">
-  <script src="https://cdn.tailwindcss.com"></script>
-  
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebApplication",
-    "name": "명경(明鏡) 성명학",
-    "description": "주역 64괘 기반 프리미엄 성명 분석 서비스",
-    "operatingSystem": "All",
-    "applicationCategory": "LifestyleApplication",
-    "offers": {
-      "@type": "Offer",
-      "price": "0",
-      "priceCurrency": "KRW"
-    }
-  }
-  </script>
-
-  <style>
-    :root {
-      --deep-red: #722f37;
-      --gold: #c5a059;
-      --charcoal: #1a1a1a;
-      --paper: #fdfaf5;
-    }
-    body {
-      font-family: 'Noto Serif KR', serif;
-      background-color: var(--paper);
-      background-image: url("https://www.transparenttextures.com/patterns/cream-paper.png");
-      color: var(--charcoal);
-      scroll-behavior: smooth;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .oriental-card {
-      background: white;
-      border: 1px solid rgba(197, 160, 89, 0.3);
-      position: relative;
-      box-shadow: 0 10px 30px -15px rgba(0,0,0,0.1);
-    }
-    .btn-premium {
-      background: linear-gradient(135deg, var(--deep-red) 0%, #4a1c22 100%);
-      color: white;
-    }
-    .nav-link {
-      transition: all 0.3s;
-      position: relative;
-    }
-    .nav-link::after {
-      content: '';
-      position: absolute;
-      width: 0; height: 1px; bottom: -2px; left: 0;
-      background-color: var(--deep-red);
-      transition: width 0.3s;
-    }
-    .nav-link:hover::after { width: 100%; }
-  </style>
 <script type="importmap">
 {
   "imports": {
-    "vite": "https://esm.sh/vite@^7.3.1",
+    "react": "https://esm.sh/react@^19.2.4",
     "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
-    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.3",
     "react/": "https://esm.sh/react@^19.2.4/",
-    "react": "https://esm.sh/react@^19.2.4"
+    "@google/genai": "https://esm.sh/@google/genai@^1.40.0",
+    "vite": "https://esm.sh/vite@^7.3.1",
+    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.3"
   }
 }
 </script>
 </head>
 <body class="min-h-screen flex flex-col">
   <div id="root"></div>
-  <!-- 빌드 도구(Vite)가 해석할 수 있도록 절대 경로로 수정 -->
   <script type="module" src="/index.tsx"></script>
 </body>
 </html>

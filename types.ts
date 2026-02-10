@@ -6,13 +6,12 @@ export interface HanjaItem {
 }
 
 export interface FortuneResult {
+  category: '수리' | '오행' | '음양' | '종합';
   title: string;
-  upper: number;
-  lower: number;
-  code: string;
   name: string;
   description: string;
   status: 'good' | 'bad' | 'neutral';
+  tags?: string[];
 }
 
 export enum AnalysisMode {
