@@ -22,9 +22,6 @@ const App: React.FC = () => {
   const [loadingMsg, setLoadingMsg] = useState('');
   const [showAd, setShowAd] = useState(false);
 
-  const n1Ref = useRef<HTMLInputElement>(null);
-  const n2Ref = useRef<HTMLInputElement>(null);
-
   const loadingMessages = [
     "성명의 파동을 정밀 분석하고 있습니다...",
     "주역 64괘와 81수리를 대조하는 중입니다...",
@@ -34,15 +31,16 @@ const App: React.FC = () => {
   ];
 
   useEffect(() => {
+    let timer: any;
     if (isLoading) {
       let idx = 0;
       setLoadingMsg(loadingMessages[0]);
-      const timer = setInterval(() => {
+      timer = setInterval(() => {
         idx = (idx + 1) % loadingMessages.length;
         setLoadingMsg(loadingMessages[idx]);
-      }, 2000);
-      return () => clearInterval(timer);
+      }, 2500);
     }
+    return () => clearInterval(timer);
   }, [isLoading]);
 
   const incrementCount = () => {
@@ -55,13 +53,12 @@ const App: React.FC = () => {
     window.scrollTo(0, 0);
   }, [view]);
 
+  // 한글 입력 핸들러 개선: 자동 포커스 이동은 한글 조합(IME)을 방해하므로 제거하거나 신중하게 처리해야 함
+  // 여기서는 조합 방해를 막기 위해 자동 이동을 제거하고 글자 수 제한만 적용
   const handleHangulInput = (key: 's' | 'n1' | 'n2', val: string) => {
-    const char = val.substring(0, 1);
+    // 마지막 입력된 한 글자만 유지
+    const char = val.length > 0 ? val.charAt(val.length - 1) : '';
     setNameInput(prev => ({ ...prev, [key]: char }));
-    
-    // 자동 포커스 이동
-    if (char && key === 's') n1Ref.current?.focus();
-    if (char && key === 'n1') n2Ref.current?.focus();
   };
 
   const runAnalysis = async () => {
@@ -85,11 +82,12 @@ const App: React.FC = () => {
 
     setIsLoading(true);
     setAiAnalysis(null);
+    setIsAnalyzed(false);
     
     const count = incrementCount();
-    if (count % 5 === 0) {
-      setShowAd(true);
-    }
+    
+    // 광고 노출 여부 결정
+    const shouldShowAd = count % 5 === 0;
 
     const baseResults = analyzeFortune(sStrokes, n1Strokes, n2Strokes, sChar, n1Char, n2Char);
     setResults(baseResults);
@@ -117,14 +115,17 @@ const App: React.FC = () => {
       setAiAnalysis(response.text || "분석 리포트를 생성하는 중 오류가 발생했습니다.");
     } catch (e) {
       console.error(e);
-      setAiAnalysis("AI 분석 기능을 일시적으로 사용할 수 없습니다. 기본 수리 분석 결과를 참고해 주세요.");
+      setAiAnalysis("AI 분석 기능을 일시적으로 사용할 수 없습니다. 하단의 기본 수리 분석 결과를 참고해 주세요.");
     }
     
-    if (count % 5 !== 0) {
+    setIsLoading(false);
+
+    if (shouldShowAd) {
+      setShowAd(true);
+    } else {
       setIsAnalyzed(true);
       setTimeout(() => document.getElementById('result-section')?.scrollIntoView({ behavior: 'smooth' }), 300);
     }
-    setIsLoading(false);
   };
 
   const handleCloseAd = () => {
@@ -139,15 +140,15 @@ const App: React.FC = () => {
     <div className="flex flex-col min-h-screen">
       {/* 로딩 인디케이터 오버레이 */}
       {isLoading && (
-        <div className="fixed inset-0 z-[100] bg-brand-paper/80 backdrop-blur-md flex flex-col items-center justify-center p-10 animate-fade-in">
+        <div className="fixed inset-0 z-[100] bg-brand-paper/90 backdrop-blur-md flex flex-col items-center justify-center p-10 animate-fade-in">
           <div className="relative mb-8">
             <div className="w-24 h-24 border-4 border-brand-gold/20 border-t-brand-red rounded-full animate-spin"></div>
             <div className="absolute inset-0 flex items-center justify-center">
               <span className="text-brand-red font-black text-xl">明</span>
             </div>
           </div>
-          <p className="text-brand-ink font-black text-lg text-center animate-pulse">{loadingMsg}</p>
-          <p className="text-stone-400 text-xs mt-4">정밀한 분석을 위해 최대 10초가 소요될 수 있습니다.</p>
+          <p className="text-brand-ink font-black text-lg text-center animate-pulse h-8">{loadingMsg}</p>
+          <p className="text-stone-400 text-xs mt-4">정밀한 분석을 위해 잠시만 기다려주세요.</p>
         </div>
       )}
 
@@ -190,7 +191,6 @@ const App: React.FC = () => {
                       <div className="w-full relative z-10">
                         {mode === AnalysisMode.HANGUL ? (
                           <input 
-                            ref={idx === 1 ? n1Ref : idx === 2 ? n2Ref : null}
                             type="text"
                             value={nameInput[key as 's'|'n1'|'n2']}
                             onChange={(e) => handleHangulInput(key as 's'|'n1'|'n2', e.target.value)}
