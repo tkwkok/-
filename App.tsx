@@ -52,9 +52,14 @@ const App: React.FC = () => {
     window.scrollTo(0, 0);
   }, [view]);
 
-  // 한글 입력 핸들러: IME 조합 방해를 최소화하기 위해 단순하게 유지
+  /**
+   * 한글 입력 핸들러: 
+   * maxLength=1은 IME 조합 중 글자를 잘라버릴 수 있으므로 
+   * 입력 시에는 여유를 두고, 분석 시에만 첫 글자를 추출합니다.
+   */
   const handleHangulInput = (key: 's' | 'n1' | 'n2', val: string) => {
-    setNameInput(prev => ({ ...prev, [key]: val }));
+    // 입력값의 마지막 글자만 유지하되, 조합 중일 수 있으므로 완전히 자르지 않고 업데이트
+    setNameInput(prev => ({ ...prev, [key]: val.slice(-1) }));
   };
 
   const runAnalysis = async () => {
@@ -66,11 +71,17 @@ const App: React.FC = () => {
         alert("성함 3글자를 모두 입력해주세요."); 
         return; 
       }
-      // 입력된 글자 중 첫 글자만 사용 (IME 완료 후 상태)
-      sChar = nameInput.s[0];
-      n1Char = nameInput.n1[0];
-      n2Char = nameInput.n2[0];
       
+      // 입력 필드에서 가장 마지막에 확정된 한 글자씩만 사용
+      sChar = nameInput.s.trim().charAt(0);
+      n1Char = nameInput.n1.trim().charAt(0);
+      n2Char = nameInput.n2.trim().charAt(0);
+      
+      if (!sChar || !n1Char || !n2Char) {
+        alert("정확한 한글 이름을 입력해주세요.");
+        return;
+      }
+
       sStrokes = getHangulStroke(sChar);
       n1Strokes = getHangulStroke(n1Char);
       n2Strokes = getHangulStroke(n2Char);
@@ -190,7 +201,7 @@ const App: React.FC = () => {
                         {mode === AnalysisMode.HANGUL ? (
                           <input 
                             type="text"
-                            maxLength={1}
+                            maxLength={2}
                             value={nameInput[key as 's'|'n1'|'n2']}
                             onChange={(e) => handleHangulInput(key as 's'|'n1'|'n2', e.target.value)}
                             className="input-premium cursor-text transition-all hover:scale-105 focus:scale-105"
@@ -207,7 +218,7 @@ const App: React.FC = () => {
                         <div className="input-border"></div>
                       </div>
                       <span className="stroke-count-text">
-                        {(mode === AnalysisMode.HANGUL ? getHangulStroke(nameInput[key as 's'|'n1'|'n2']) : hanjaItems[idx]?.s) || 0} 획
+                        {(mode === AnalysisMode.HANGUL ? getHangulStroke(nameInput[key as 's'|'n1'|'n2'].charAt(0)) : hanjaItems[idx]?.s) || 0} 획
                       </span>
                     </div>
                   ))}
