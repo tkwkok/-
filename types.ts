@@ -1,10 +1,4 @@
 
-export interface HanjaItem {
-  h: string;
-  k: string;
-  s: number;
-}
-
 export interface FortuneResult {
   category: '수리' | '오행' | '음양' | '종합';
   title: string;
@@ -14,7 +8,9 @@ export interface FortuneResult {
   tags?: string[];
 }
 
-export enum AnalysisMode {
-  HANGUL = 'HANGUL',
-  HANJA = 'HANJA'
+// Fixed missing HanjaItem interface for constants.tsx
+export interface HanjaItem {
+  h: string; // Hanja character
+  k: string; // Korean reading
+  s: number; // Stroke count
 }
