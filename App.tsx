@@ -54,12 +54,14 @@ const App: React.FC = () => {
 
   /**
    * 한글 입력 핸들러: 
-   * maxLength=1은 IME 조합 중 글자를 잘라버릴 수 있으므로 
-   * 입력 시에는 여유를 두고, 분석 시에만 첫 글자를 추출합니다.
+   * IME(한글 조합) 중에는 maxLength가 조합을 방해할 수 있으므로 
+   * 입력 시에는 약간의 여유(maxLength=2)를 허용하고, 상태 업데이트 시에는
+   * 조합이 깨지지 않도록 마지막에 입력된 글자 덩어리만 반영합니다.
    */
   const handleHangulInput = (key: 's' | 'n1' | 'n2', val: string) => {
-    // 입력값의 마지막 글자만 유지하되, 조합 중일 수 있으므로 완전히 자르지 않고 업데이트
-    setNameInput(prev => ({ ...prev, [key]: val.slice(-1) }));
+    // 사용자가 여러 글자를 입력하려 할 때 마지막 글자만 취함 (조합 방지 X)
+    const cleanedValue = val.length > 1 ? val.slice(-1) : val;
+    setNameInput(prev => ({ ...prev, [key]: cleanedValue }));
   };
 
   const runAnalysis = async () => {
@@ -67,21 +69,16 @@ const App: React.FC = () => {
     let sChar = '', n1Char = '', n2Char = '';
 
     if (mode === AnalysisMode.HANGUL) {
-      if (!nameInput.s || !nameInput.n1 || !nameInput.n2) { 
-        alert("성함 3글자를 모두 입력해주세요."); 
-        return; 
-      }
-      
-      // 입력 필드에서 가장 마지막에 확정된 한 글자씩만 사용
+      // 각 필드에서 공백 제거 후 첫 글자만 사용
       sChar = nameInput.s.trim().charAt(0);
       n1Char = nameInput.n1.trim().charAt(0);
       n2Char = nameInput.n2.trim().charAt(0);
-      
-      if (!sChar || !n1Char || !n2Char) {
-        alert("정확한 한글 이름을 입력해주세요.");
-        return;
-      }
 
+      if (!sChar || !n1Char || !n2Char) { 
+        alert("성함 3글자를 정확히 입력해주세요."); 
+        return; 
+      }
+      
       sStrokes = getHangulStroke(sChar);
       n1Strokes = getHangulStroke(n1Char);
       n2Strokes = getHangulStroke(n2Char);
@@ -133,7 +130,10 @@ const App: React.FC = () => {
       setShowAd(true);
     } else {
       setIsAnalyzed(true);
-      setTimeout(() => document.getElementById('result-section')?.scrollIntoView({ behavior: 'smooth' }), 300);
+      setTimeout(() => {
+        const resultSection = document.getElementById('result-section');
+        if (resultSection) resultSection.scrollIntoView({ behavior: 'smooth' });
+      }, 300);
     }
   };
 
@@ -141,7 +141,8 @@ const App: React.FC = () => {
     setShowAd(false);
     setIsAnalyzed(true);
     setTimeout(() => {
-      document.getElementById('result-section')?.scrollIntoView({ behavior: 'smooth' });
+      const resultSection = document.getElementById('result-section');
+      if (resultSection) resultSection.scrollIntoView({ behavior: 'smooth' });
     }, 300);
   };
 
@@ -149,14 +150,14 @@ const App: React.FC = () => {
     <div className="flex flex-col min-h-screen">
       {/* 로딩 인디케이터 오버레이 */}
       {isLoading && (
-        <div className="fixed inset-0 z-[100] bg-brand-paper/90 backdrop-blur-md flex flex-col items-center justify-center p-10 animate-fade-in">
+        <div className="fixed inset-0 z-[100] bg-brand-paper/90 backdrop-blur-md flex flex-col items-center justify-center p-10 animate-fade-in text-center">
           <div className="relative mb-8">
             <div className="w-24 h-24 border-4 border-brand-gold/20 border-t-brand-red rounded-full animate-spin"></div>
             <div className="absolute inset-0 flex items-center justify-center">
               <span className="text-brand-red font-black text-xl">明</span>
             </div>
           </div>
-          <p className="text-brand-ink font-black text-lg text-center animate-pulse h-8">{loadingMsg}</p>
+          <p className="text-brand-ink font-black text-lg text-center animate-pulse h-8 transition-all duration-700">{loadingMsg}</p>
           <p className="text-stone-400 text-xs mt-4">정밀한 분석을 위해 잠시만 기다려주세요.</p>
         </div>
       )}
