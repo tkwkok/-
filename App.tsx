@@ -64,11 +64,12 @@ const App: React.FC = () => {
       const fullName = mode === AnalysisMode.HANGUL ? `${nameInput.s}${nameInput.n1}${nameInput.n2}` : hanjaItems.map(h => h?.h).join('');
       
       const prompt = `당신은 대한민국 최고의 정통 주역 성명학 권위자입니다. 다음 이름 '${fullName}'에 대해 전문가 수준의 심층 분석 리포트를 작성해 주세요. 
-      분석 시 다음 요소를 반드시 심도 있게 다뤄주세요:
-      1. 이름이 가진 전체적인 품격과 영적인 기운 (주역 64괘 기반)
-      2. 발음오행의 상생과 발음음양의 조화가 선사하는 운명적 흐름
-      3. 81수리의 원형이정 4격이 삶의 주기(초년, 중년, 장년, 노년)에 미치는 영향
-      4. 사주 보완을 위해 향후 고려하면 좋은 자원오행 제언
+      분석 시 다음 5대 핵심 요소를 반드시 전문적으로 다뤄주세요:
+      1. 발음오행: 소리의 상생/상극이 만드는 대인관계와 사회적 명망
+      2. 발음음양: 획수의 음양 조화가 선사하는 삶의 안정성과 굴곡
+      3. 81수리: 원형이정(元亨利貞) 4격이 삶의 주기(초년, 중년, 장년, 노년)에 미치는 영향
+      4. 자원오행 제언: 한자의 근원적 에너지가 사주의 부족한 기운을 어떻게 보완할 수 있는지
+      5. 용신분석 기반 운세: 이름이 금전운과 성공운에 미치는 긍정적 파동
       문체는 매우 격조 있고 정중하게 작성하며, 사용자가 삶의 희망을 발견할 수 있도록 품위 있는 언어를 사용해 주세요.`;
 
       const response = await ai.models.generateContent({
@@ -98,7 +99,7 @@ const App: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen">
       {/* 고정 헤더 */}
-      <nav className="sticky top-0 z-40 bg-brand-paper/90 backdrop-blur-lg h-16 flex items-center justify-between px-6 border-b border-brand-gold/10 shadow-sm">
+      <nav className="sticky top-0 z-40 bg-brand-paper/90 backdrop-blur-lg h-16 flex items-center justify-between px-6 border-b border-brand-gold/10 shadow-md">
         <button onClick={() => setView('main')} className="flex items-center gap-2">
           <div className="w-8 h-8 bg-brand-red rounded-lg flex items-center justify-center shadow-md">
             <span className="text-white text-sm font-black">明</span>
@@ -290,7 +291,7 @@ const App: React.FC = () => {
         </footer>
       </div>
 
-      {/* 모바일 하단 탭 바 (앱 경험 극대화) */}
+      {/* 모바일 하단 탭 바 */}
       <div className="mobile-nav md:hidden border-t border-stone-100 shadow-[0_-5px_15px_-5px_rgba(0,0,0,0.05)] bg-white/95">
         <button onClick={() => setView('main')} className={`flex flex-col items-center gap-1 transition-all ${view === 'main' ? 'text-brand-red scale-110' : 'text-stone-300'}`}>
           <div className="text-xl">{view === 'main' ? '⛩️' : '🏠'}</div>
