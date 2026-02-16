@@ -2,6 +2,16 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+  <link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#722f37">
+
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js');
+    });
+  }
+</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>명경(明鏡) | 현직 약사가 설계한 정통 주역 성명학 분석</title>
