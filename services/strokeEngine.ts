@@ -1,3 +1,4 @@
+
 import { HANGUL_STROKES_ENGINE, HEXAGRAM_DB } from '../constants';
 import { FortuneResult } from '../types';
 
@@ -26,29 +27,28 @@ export const getHangulStroke = (char: string): number => {
 };
 
 export const analyzeFortune = (s: number, n1: number, n2: number, sChar: string, n1Char: string, n2Char: string): FortuneResult[] => {
-  // 4격 기초 획수 계산
+  // 4격 기초 획수 계산 (사용자 요청 공식)
   const won = n1 + n2;          // 원격 (이름1 + 이름2)
   const hyung = s + n1;         // 형격 (성 + 이름1)
   const lee = s + n2;           // 이격 (성 + 이름2)
   const jung = s + n1 + n2;     // 정격 (성 + 이름1 + 이름2)
 
-  /**
-   * '작명의 온도' 정통 주역 공식 적용
-   * 초년운(원): 상괘=형/8, 하괘=원/8
-   * 중년운(형): 상괘=형/8, 하괘=이/8
-   * 말년운(이): 상괘=형/8, 하괘=정/6
-   * 총운(정): 상괘=정/8, 하괘=원/8
-   */
   const getHex = (upper: number, lower: number) => {
-    // 64괘 DB는 상괘+하괘의 문자열 키 (예: "11", "73")를 사용합니다.
     const key = `${upper}${lower}`;
     return HEXAGRAM_DB[key] || { 
-      name: '운명의 괘', 
-      desc: '꾸준한 노력이 결실을 맺는 시기입니다. 겸손함으로 덕을 쌓으십시오.', 
+      name: `운명의 괘 (${upper}-${lower})`, 
+      desc: '꾸준한 노력이 결실을 맺는 시기입니다. 겸손함으로 덕을 쌓으십시오. 현재 이 괘의 상세 데이터가 준비 중입니다.', 
       status: 'neutral' 
     };
   };
 
+  /**
+   * 사용자 지정 공식:
+   * 총운(정): 상괘=정/8, 하괘=원/8
+   * 초년운(원): 상괘=형/8, 하괘=원/8
+   * 중년운(형): 상괘=형/8, 하괘=이/8
+   * 말년운(이): 상괘=형/8, 하괘=정/6
+   */
   const wonResult = getHex(getMod(hyung, 8), getMod(won, 8));
   const hyungResult = getHex(getMod(hyung, 8), getMod(lee, 8));
   const leeResult = getHex(getMod(hyung, 8), getMod(jung, 6)); 
@@ -60,28 +60,32 @@ export const analyzeFortune = (s: number, n1: number, n2: number, sChar: string,
       title: '초년운 (元格)',
       name: wonResult.name,
       description: wonResult.desc,
-      status: wonResult.status as any
+      status: wonResult.status as any,
+      tags: [`수치: ${getMod(hyung, 8)}-${getMod(won, 8)}`]
     },
     {
       category: '종합',
       title: '중년운 (亨格)',
       name: hyungResult.name,
       description: hyungResult.desc,
-      status: hyungResult.status as any
+      status: hyungResult.status as any,
+      tags: [`수치: ${getMod(hyung, 8)}-${getMod(lee, 8)}`]
     },
     {
       category: '종합',
-      title: '말년운 (利格)',
+      title: '장년운 (利格)',
       name: leeResult.name,
       description: leeResult.desc,
-      status: leeResult.status as any
+      status: leeResult.status as any,
+      tags: [`수치: ${getMod(hyung, 8)}-${getMod(jung, 6)}`]
     },
     {
       category: '종합',
       title: '총운 (貞格)',
       name: jungResult.name,
       description: jungResult.desc,
-      status: jungResult.status as any
+      status: jungResult.status as any,
+      tags: [`수치: ${getMod(jung, 8)}-${getMod(won, 8)}`]
     }
   ];
 };

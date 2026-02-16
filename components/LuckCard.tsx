@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { FortuneResult } from '../types';
 
@@ -9,25 +10,13 @@ const LuckCard: React.FC<Props> = ({ fortune }) => {
   const getStatusStyle = () => {
     switch(fortune.status) {
       case 'good': return { 
-        accent: '#1e40af', // 진한 파랑
-        text: 'text-brand-blue',
-        bg: 'bg-blue-50/70',
-        border: 'border-blue-200',
-        dot: 'bg-brand-blue'
+        accent: '#1e40af', text: 'text-brand-blue', bg: 'bg-blue-50/70', border: 'border-blue-200', dot: 'bg-brand-blue'
       };
       case 'bad': return { 
-        accent: '#991b1b', // 짙은 빨강
-        text: 'text-brand-red',
-        bg: 'bg-red-50/70',
-        border: 'border-red-200',
-        dot: 'bg-brand-red'
+        accent: '#991b1b', text: 'text-brand-red', bg: 'bg-red-50/70', border: 'border-red-200', dot: 'bg-brand-red'
       };
       default: return { 
-        accent: '#3f3f46', 
-        text: 'text-zinc-700',
-        bg: 'bg-stone-50',
-        border: 'border-stone-200',
-        dot: 'bg-zinc-400'
+        accent: '#3f3f46', text: 'text-zinc-700', bg: 'bg-stone-50', border: 'border-stone-200', dot: 'bg-zinc-400'
       };
     }
   };
@@ -50,19 +39,23 @@ const LuckCard: React.FC<Props> = ({ fortune }) => {
             {fortune.name}
           </h4>
         </div>
-        <div className="text-right select-none pointer-events-none opacity-[0.04]">
-          <div className="text-8xl font-black text-brand-ink italic">卦</div>
+        <div className="text-right">
+          {fortune.tags?.map((tag, idx) => (
+            <span key={idx} className="text-[10px] font-black bg-stone-100 px-3 py-1 rounded-full text-stone-400 tracking-widest uppercase">
+              {tag}
+            </span>
+          ))}
         </div>
       </div>
       
       <div className={`p-8 rounded-[2rem] ${style.bg} mb-8 border ${style.border} backdrop-blur-sm`}>
-        <p className="text-[17px] text-stone-800 leading-relaxed font-bold whitespace-pre-wrap">
+        <p className="text-[17px] text-stone-800 leading-relaxed font-bold whitespace-pre-wrap text-justify analysis-content">
           {fortune.description}
         </p>
       </div>
       
       <div className="flex justify-between items-center pt-6 border-t border-stone-100">
-        <span className="text-[10px] text-stone-400 font-black uppercase tracking-widest italic">Ancient I-Ching Oracle</span>
+        <span className="text-[10px] text-stone-400 font-black uppercase tracking-widest italic">Authentic I-Ching Oracle</span>
         <span className={`text-[11px] font-black tracking-widest uppercase ${style.text}`}>
           {fortune.status === 'good' ? 'Great Fortune' : fortune.status === 'bad' ? 'Calamity Alert' : 'Natural Flow'}
         </span>
